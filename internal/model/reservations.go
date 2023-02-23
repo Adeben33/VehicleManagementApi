@@ -1,7 +1,9 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Reservation struct {
-	Id            primitive.ObjectId `bson:"_id"`
+	Id            primitive.ObjectID `bson:"_id"`
 	userId        string             `json:"userId" bson:"user_id"`
 	ParkingLotId  string             `json:"parkingLotId" bson:"parking_lot_id"`
 	VehicleId     string             `json:"vehicleId" bson:"vehicle_id"`

@@ -1,7 +1,9 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Vehicle struct {
-	Id          primitive.ObjectId `json:"_id" bson:"_id"`
+	Id          primitive.ObjectID `json:"_id" bson:"_id"`
 	VehicleType string             `json:"vehicleType" bson:"vehicle_type"`
 	Color       string             `json:"color" bson:"color"`
 	Make        string             `json:"make" bson:"make"`

@@ -1,6 +1,8 @@
 package utility
 
 import (
+	"fmt"
+	"github.com/adeben33/vehicleParkingApi/internal/config"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"github.com/golang-jwt/jwt/v4"
 	"log"
@@ -32,4 +34,21 @@ func GenerateToken(user model.User, secretKey string) string {
 		log.Panic(err)
 	}
 	return tokenString
+}
+
+func ValidateToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		secretKey := config.GetConfig().Server.Secret
+		return secretKey, nil
+	})
+	return token, err
+	//if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	//	return claims, nil
+	//} else {
+	//	return nil, err
+	//}
 }

@@ -64,3 +64,7 @@ func (base *UserController) Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.JSON(http.StatusOK, gin.H{"user Details": Response})
 }
+
+func (base *UserController) Testing(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"msg": "logged In"})
+}

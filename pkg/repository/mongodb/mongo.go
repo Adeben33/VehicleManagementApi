@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func FindUser(userEmail string) (model.User, error) {
+func FindUser(userEmail string) (model.User, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	client := database.Connection()
@@ -24,9 +24,13 @@ func FindUser(userEmail string) (model.User, error) {
 	var user model.User
 	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		return model.User{}, err
+		return model.User{}, 0, err
 	}
-	return user, nil
+	count, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return model.User{}, 0, err
+	}
+	return user, count, nil
 }
 
 func SaveUser(user model.User) (*mongo.InsertOneResult, error) {

@@ -13,3 +13,11 @@ type Vehicle struct {
 	CreatedAT   string             `json:"createdAT" bson:"created_at"`
 	UpdatedAt   string             `json:"updatedAt" bson:"updated_at"`
 }
+
+type VehicleCategory struct {
+	Id         primitive.ObjectID `bson:"_id"`
+	Name       string             `json:"name" bson:"name"`
+	RatePerDay uint64             `json:"ratePerDay" bson:"rate_per_day"`
+	CreatedAt  string             `json:"createdAt"bson:"created_at"`
+	UpdatedAT  string             `json:"updatedAT" bson:"updated_at"`
+}

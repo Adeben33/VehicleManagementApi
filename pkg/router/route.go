@@ -13,6 +13,6 @@ func Setup(validate *validator.Validate) *gin.Engine {
 	ApiVersion := "v1"
 
 	user.User(r, validate, ApiVersion)
-
+	admin.A
 	return r
 }

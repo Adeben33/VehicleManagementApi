@@ -14,10 +14,14 @@ import (
 
 func SignUpUser(user model.User) (model.UserRes, string, error) {
 	//check if the user already exists this is checked by email which is unique based of validator
-	_, err := mongodb.FindUser(user.Email)
+	_, count, err := mongodb.FindUser(user.Email)
 	if err == nil {
-		return model.UserRes{}, fmt.Sprintf("User Already exists"), errors.New("user already exist in database")
+		return model.UserRes{}, fmt.Sprintf("User Already exists 1"), errors.New("user already exist in database 1")
 	}
+	if count > 1 {
+		return model.UserRes{}, fmt.Sprintf("User Already exists 2"), errors.New("user already exist in database 1")
+	}
+
 	//Harsh the password
 	harsh, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
 	user.Password = string(harsh)
@@ -43,11 +47,12 @@ func SignUpUser(user model.User) (model.UserRes, string, error) {
 
 func LoginUser(user model.UserLogin) (model.UserRes, string, string, error) {
 	//Get the user from the db
-	result, _ := mongodb.FindUser(user.Email)
+	result, _, _ := mongodb.FindUser(user.Email)
 
 	//	Validate the password
 	err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password))
 	if err != nil {
+
 		return model.UserRes{}, "invalid password", " ", errors.New("invalid password")
 	}
 	//	get a token

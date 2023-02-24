@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"errors"
 	"fmt"
 	"github.com/adeben33/vehicleParkingApi/internal/config"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
@@ -36,7 +37,7 @@ func GenerateToken(user model.User, secretKey string) string {
 	return tokenString
 }
 
-func ValidateToken(tokenString string) (*jwt.Token, error) {
+func ValidateToken(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -45,10 +46,13 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 		secretKey := config.GetConfig().Server.Secret
 		return secretKey, nil
 	})
-	return token, err
-	//if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-	//	return claims, nil
-	//} else {
-	//	return nil, err
-	//}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
+		if time.Now().After(expirationTime) {
+			return "", errors.New("token Has expired")
+		}
+		return claims["role"].(string), nil
+	} else {
+		return "", err
+	}
 }

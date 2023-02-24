@@ -36,3 +36,31 @@ func (base *UserController) SignUp(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": userRes})
 }
+
+func (base *UserController) Login(c *gin.Context) {
+	var user model.UserLogin
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	_, err = c.Request.Cookie("userToken")
+	if err == nil {
+		c.JSON(401, gin.H{"Error": "User Already logged in"})
+		return
+	}
+
+	err = base.Validate.Struct(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	Response, errstring, token, err := userService.LoginUser(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": errstring, "Error": err})
+		return
+	}
+	c.SetCookie("userToken", token, 60*60*24, "/", "", false, true)
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.JSON(http.StatusOK, gin.H{"user Details": Response})
+}

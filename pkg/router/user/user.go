@@ -14,7 +14,7 @@ func User(r *gin.Engine, validate *validator.Validate, APiVersion string) *gin.E
 	{
 		userUrl.GET("/ping", user.Ping)
 		userUrl.POST("/signup", user.SignUp)
-		userUrl.POST('/login', user.Login)
+		userUrl.POST("/login", user.Login)
 	}
 	return r
 }

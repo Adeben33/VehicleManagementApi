@@ -17,15 +17,14 @@ type Vehicle struct {
 type VehicleCategory struct {
 	Id                primitive.ObjectID `bson:"_id"`
 	Name              string             `json:"name" bson:"name"`
-	RatePerDay        uint64             `json:"ratePerDay" bson:"rate_per_day"`
+	RatePerDay        int                `json:"ratePerDay" bson:"rate_per_day"`
 	CreatedAt         string             `json:"createdAt"bson:"created_at"`
 	UpdatedAT         string             `json:"updatedAT" bson:"updated_at"`
 	VehicleCategoryId string             `json:"vehicleId" bson:"vehicle_id"`
 }
 
 type VehicleCategoryRes struct {
-	Id                primitive.ObjectID `bson:"_id"`
-	Name              string             `json:"name" bson:"name"`
-	RatePerDay        uint64             `json:"ratePerDay" bson:"rate_per_day"`
-	VehicleCategoryId string             `json:"vehicleId" bson:"vehicle_id"`
+	Name              string
+	RatePerDay        int
+	VehicleCategoryId string
 }

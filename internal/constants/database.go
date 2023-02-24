@@ -1,5 +1,6 @@
 package constants
 
 const (
-	UserCollection = "user"
+	UserCollection     = "user"
+	CategoryCollection = "category"
 )

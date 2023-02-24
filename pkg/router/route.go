@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/adeben33/vehicleParkingApi/pkg/router/admin"
 	"github.com/adeben33/vehicleParkingApi/pkg/router/user"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -13,6 +14,6 @@ func Setup(validate *validator.Validate) *gin.Engine {
 	ApiVersion := "v1"
 
 	user.User(r, validate, ApiVersion)
-	admin.A
+	admin.Admin(r, validate, ApiVersion)
 	return r
 }

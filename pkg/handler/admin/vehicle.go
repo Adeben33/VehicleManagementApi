@@ -1,19 +1,13 @@
 package admin
 
-import "C"
 import (
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	adminService "github.com/adeben33/vehicleParkingApi/service/admin"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
-type Controller struct {
-	Validate *validator.Validate
-}
-
-func (base *Controller) CreateCategory(c *gin.Context) {
+func (base *Controller) CreateVehicle(c *gin.Context) {
 	var category model.VehicleCategory
 	err := c.BindJSON(&category)
 	if err != nil {
@@ -25,16 +19,16 @@ func (base *Controller) CreateCategory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	categoryRes, errstring, err := adminService.CreateCategory(category)
+	categoryRes, errstring, errString := adminService.CreateCategory(category)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": errstring, "Error": err})
+	if errString != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": errstring, "Error": errString.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": categoryRes})
 }
 
-func (base *Controller) GetCategory(c *gin.Context) {
+func (base *Controller) GetVehicle(c *gin.Context) {
 	Id := c.Param("categoryId")
 
 	categoryResponse, errString, err := adminService.GetCategory(Id)
@@ -47,7 +41,7 @@ func (base *Controller) GetCategory(c *gin.Context) {
 
 }
 
-func (base *Controller) UpdateCategory(c *gin.Context) {
+func (base *Controller) UpdateVehicle(c *gin.Context) {
 	categoryId := c.Param("categoryId")
 	var category model.VehicleCategory
 	err := c.BindJSON(&category)
@@ -63,12 +57,12 @@ func (base *Controller) UpdateCategory(c *gin.Context) {
 	CategoryRes, err := adminService.UpdateCategory(category, categoryId)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": CategoryRes})
 }
-func (base *Controller) DeleteCategory(c *gin.Context) {
+func (base *Controller) DeleteVehicle(c *gin.Context) {
 	Id := c.Param("categoryId")
 
 	categoryResponse, errString, err := adminService.DeleteCategory(Id)

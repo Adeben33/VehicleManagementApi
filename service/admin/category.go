@@ -1,29 +1,35 @@
 package admin
 
 import (
+	"errors"
 	"fmt"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"github.com/adeben33/vehicleParkingApi/pkg/repository/mongodb"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
 func CreateCategory(category model.VehicleCategory) (model.VehicleCategoryRes, string, error) {
 	//	check if the categoryexist
-	_, stmt, err := mongodb.FindCategory(category.VehicleCategoryId)
+	_, stmt, err := mongodb.FindCategoryByName(category.Name)
 	if err == nil {
-		return model.VehicleCategoryRes{}, stmt, err
+		return model.VehicleCategoryRes{}, stmt, errors.New("Category Already In the database")
 	}
+
 	//Then save the category
 	category.CreatedAt = time.Now().Local().Format(time.DateTime)
-	category.CreatedAt = time.Now().Local().Format(time.DateTime)
+	category.UpdatedAT = time.Now().Local().Format(time.DateTime)
+	category.Id = primitive.NewObjectID()
+	category.VehicleCategoryId = category.Id.Hex()
 	_, err = mongodb.SaveCategory(category)
 	if err != nil {
-		return model.VehicleCategoryRes{}, fmt.Sprintf("Error saving into database"), err
+		return model.VehicleCategoryRes{}, fmt.Sprintf("Error saving into database"), fmt.Errorf(err.Error())
 	}
 	vehicleResponse := model.VehicleCategoryRes{
-		Name:       category.Name,
-		RatePerDay: category.RatePerDay,
+		Name:              category.Name,
+		RatePerDay:        category.RatePerDay,
+		VehicleCategoryId: category.VehicleCategoryId,
 	}
 	return vehicleResponse, fmt.Sprintf("Category saved successfully into the db"), nil
 }
@@ -62,7 +68,7 @@ func UpdateCategory(category model.VehicleCategory, id string) (model.VehicleCat
 	if category.RatePerDay != 0 {
 		existingCategory.RatePerDay = category.RatePerDay
 	}
-	existingCategory.CreatedAt = time.Now().Local().Format(time.DateTime)
+	existingCategory.UpdatedAT = time.Now().Local().Format(time.DateTime)
 	_, err = mongodb.UpdateCategory(existingCategory, id)
 	if err != nil {
 		return model.VehicleCategoryRes{}, err

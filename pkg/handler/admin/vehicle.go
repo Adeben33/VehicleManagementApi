@@ -29,7 +29,7 @@ func (base *Controller) CreateVehicle(c *gin.Context) {
 }
 
 func (base *Controller) GetVehicle(c *gin.Context) {
-	Id := c.Param("categoryId")
+	Id := c.Param("vehicleId")
 
 	categoryResponse, errString, err := adminService.GetVehicle(Id)
 
@@ -43,18 +43,18 @@ func (base *Controller) GetVehicle(c *gin.Context) {
 
 func (base *Controller) UpdateVehicle(c *gin.Context) {
 	categoryId := c.Param("categoryId")
-	var category model.VehicleCategory
-	err := c.BindJSON(&category)
+	var vehicle model.Vehicle
+	err := c.BindJSON(&vehicle)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = base.Validate.Struct(&category)
+	err = base.Validate.Struct(&vehicle)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	CategoryRes, err := adminService.UpdateVehicle(category, categoryId)
+	CategoryRes, err := adminService.UpdateVehicle(vehicle, categoryId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})

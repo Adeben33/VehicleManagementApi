@@ -37,49 +37,61 @@ func CreateVehicle(vehicle model.Vehicle) (model.VehicleRes, string, error) {
 	return vehicleResponse, fmt.Sprintf("Category saved successfully into the db"), nil
 }
 
-func GetVehicle(id string) (model.VehicleCategoryRes, string, error) {
+func GetVehicle(id string) (model.VehicleRes, string, error) {
 
-	vehicleCategory, stmt, err := mongodb.FindCategory(id)
+	vehicleCategory, stmt, err := mongodb.FindVehicle(id)
 	if err != nil {
-		return model.VehicleCategoryRes{}, stmt, err
+		return model.VehicleRes{}, stmt, err
 	}
-	vehicleRes := model.VehicleCategoryRes{
-		Name:              vehicleCategory.Name,
-		RatePerDay:        vehicleCategory.RatePerDay,
+	vehicleRes := model.VehicleRes{
 		VehicleCategoryId: vehicleCategory.VehicleCategoryId,
+		Make:              vehicleCategory.Make,
+		Model:             vehicleCategory.Make,
+		Year:              vehicleCategory.Year,
+		PlateNumber:       vehicleCategory.PlateNumber,
+		VehicleId:         vehicleCategory.VehicleId,
 	}
 	return vehicleRes, fmt.Sprintf("Model generated"), nil
 }
 
 func DeleteVehicle(id string) (*mongo.DeleteResult, string, error) {
 	//Taking to the database
-	deleteResult, stmt, err := mongodb.DeleteCategory(id)
+	deleteResult, stmt, err := mongodb.DeleteVehicle(id)
 	if err != nil {
 		return nil, stmt, err
 	}
 	return deleteResult, fmt.Sprintf("Category deleted successfully"), nil
 }
 
-func UpdateVehicle(category model.VehicleCategory, id string) (model.VehicleCategoryRes, error) {
-	existingCategory, _, err := mongodb.FindCategory(id)
+func UpdateVehicle(vehicle model.Vehicle, id string) (model.VehicleRes, error) {
+	existingVehicle, _, err := mongodb.FindVehicle(vehicle.PlateNumber)
 	if err != nil {
-		return model.VehicleCategoryRes{}, err
+		return model.VehicleRes{}, err
 	}
-	if category.Name != " " {
-		existingCategory.Name = category.Name
+	if vehicle.Year != " " {
+		existingVehicle.Year = vehicle.Year
 	}
-	if category.RatePerDay != 0 {
-		existingCategory.RatePerDay = category.RatePerDay
+	if vehicle.Make != " " {
+		existingVehicle.Make = vehicle.Make
 	}
-	existingCategory.UpdatedAT = time.Now().Local().Format(time.DateTime)
-	_, err = mongodb.UpdateCategory(existingCategory, id)
+	if vehicle.Model != " " {
+		existingVehicle.Model = vehicle.Model
+	}
+	if vehicle.Color != " " {
+		existingVehicle.Color = vehicle.Color
+	}
+	existingVehicle.UpdatedAt = time.Now().Local().Format(time.DateTime)
+	_, err = mongodb.UpdateVehicle(existingVehicle, id)
 	if err != nil {
-		return model.VehicleCategoryRes{}, err
+		return model.VehicleRes{}, err
 	}
-	response := model.VehicleCategoryRes{
-		Name:              existingCategory.Name,
-		RatePerDay:        existingCategory.RatePerDay,
-		VehicleCategoryId: existingCategory.VehicleCategoryId,
+	response := model.VehicleRes{
+		VehicleCategoryId: existingVehicle.VehicleId,
+		Make:              existingVehicle.Make,
+		Model:             existingVehicle.Model,
+		Year:              existingVehicle.Year,
+		PlateNumber:       existingVehicle.PlateNumber,
+		VehicleId:         existingVehicle.VehicleId,
 	}
 	return response, nil
 }

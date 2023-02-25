@@ -14,10 +14,11 @@ func Admin(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gin.
 
 	//Vehicle administration only admin can add vehicle
 	{
-		adminUrl.POST("/vehicle", adminHandler.CreateVehicle)
-		adminUrl.GET("/vehicle/:vehicleId", adminHandler.GetVehicle)
-		adminUrl.PUT("/vehicle", adminHandler.UpdateVehicle)
-		adminUrl.DELETE("/vehicle", adminHandler.DeleteVehicle)
+
+		adminUrl.POST("/vehicle", admin.CreateVehicle)
+		adminUrl.GET("/vehicle/:vehicleId", admin.GetVehicle)
+		adminUrl.PUT("/vehicle/:vehicleId", admin.UpdateVehicle)
+		adminUrl.DELETE("/vehicle/:vehicleId", admin.DeleteVehicle)
 	}
 	//	Category
 	{

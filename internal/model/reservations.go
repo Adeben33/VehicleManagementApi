@@ -8,7 +8,7 @@ type Reservation struct {
 	ParkingLotId  string             `json:"parkingLotId" bson:"parking_lot_id"`
 	ParkingSpace  string             `json:"parkingSpace" bson:"parking_space"`
 	VehicleId     string             `json:"vehicleId" bson:"vehicle_id"`
-	Status        string             `json:"status" bson:"status"`
+	Status        string             `json:"status" bson:"status"` //parked,completed,vacant
 	StartTime     string             `json:"startTime" bson:"start_time"`
 	EndTime       string             `json:"endTime" bson:"end_time"`
 	AmountPaid    uint               `json:"amountPaid" bson:"amount_paid"`

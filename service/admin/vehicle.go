@@ -95,3 +95,33 @@ func UpdateVehicle(vehicle model.Vehicle, id string) (model.VehicleRes, error) {
 	}
 	return response, nil
 }
+
+func GetVehicles(timeLow, timeHigh, page, sort string) ([]model.VehicleRes, string, error) {
+	vehicleRes, err := mongodb.FindVehicles(timeLow, timeHigh, page, sort)
+	if err != nil {
+		return []model.VehicleRes{}, fmt.Sprintf("vehicleRes not generated"), nil
+	}
+	return vehicleRes, fmt.Sprintf("vehicleRes generated"), nil
+}
+
+func GetVehicleByParkingSpaceNumber(spaceNumber string) (model.VehicleRes, string, error) {
+	//	find the vehicleId from parkingspace collection
+	vehicleId, stmt, err := mongodb.FindVehicleIdByParkingSpaceNumber(spaceNumber)
+	if err != nil {
+		return model.VehicleRes{}, stmt, err
+	}
+	//	find the vehicleId from the vehicle collection
+	vehicle, stmt, err := mongodb.FindVehicle(vehicleId)
+	if err != nil {
+		return model.VehicleRes{}, stmt, err
+	}
+	vehicleRes := model.VehicleRes{
+		VehicleCategoryId: vehicle.VehicleCategoryId,
+		Make:              vehicle.Make,
+		Model:             vehicle.Model,
+		Year:              vehicle.Year,
+		PlateNumber:       vehicle.PlateNumber,
+		VehicleId:         vehicle.VehicleId,
+	}
+	return vehicleRes, stmt, nil
+}

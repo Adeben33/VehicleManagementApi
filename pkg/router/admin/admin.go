@@ -30,12 +30,12 @@ func Admin(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gin.
 	//DashBoard
 	{
 		adminUrl.GET("/Dashboard/getvehicles", admin.GetVehicles)
-		adminUrl.GET("/Dashboard/getvehicle/:parkingnumber")
+		adminUrl.GET("/Dashboard/getvehicle/:parkingSpaceNumber", admin.GetVehicleByParkingNumber)
 	}
 	//ManageVehicle
 	{
 		adminUrl.GET("/manageVehicle/entryReport")
-		adminUrl.GET("/manageVehicle/incoming/:vehiclePlateNumber")
+		adminUrl.GET("/manageVehicle/incoming/:vehiclePlateNumber", admin.IncomingVehicle)
 		adminUrl.GET("/manageVehicle/outcoming/:vehiclePlateNumber")
 	}
 

@@ -20,6 +20,7 @@ type ParkingSpace struct {
 	Charges        uint16             `json:"charges" bson:"charges"`
 	IsOccupied     bool               `json:"isOccupied" bson:"is_occupied"`
 	OccupiedBy     string             `json:"occupiedBy" bson:"occupied_by"` //this is the user string
+	VehicleId      string             `json:"vehicleId" bson:"vehicle_id"`
 	ReservedBy     string             `json:"reservedBy" bson:"reserved_by"`
 	ParkingSpaceId string             `json:"parkingSpaceId" bson:"parking_space_id"`
 }

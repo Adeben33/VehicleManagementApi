@@ -42,7 +42,7 @@ func (base *Controller) GetVehicle(c *gin.Context) {
 }
 
 func (base *Controller) UpdateVehicle(c *gin.Context) {
-	categoryId := c.Param("categoryId")
+	vehicleId := c.Param("vehicleId")
 	var vehicle model.Vehicle
 	err := c.BindJSON(&vehicle)
 	if err != nil {
@@ -54,16 +54,16 @@ func (base *Controller) UpdateVehicle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	CategoryRes, err := adminService.UpdateVehicle(vehicle, categoryId)
+	CategoryRes, err := adminService.UpdateVehicle(vehicle, vehicleId)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error(), "number": 1})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": CategoryRes})
 }
 func (base *Controller) DeleteVehicle(c *gin.Context) {
-	Id := c.Param("categoryId")
+	Id := c.Param("vehicleId")
 
 	categoryResponse, errString, err := adminService.DeleteVehicle(Id)
 
@@ -72,4 +72,8 @@ func (base *Controller) DeleteVehicle(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
+}
+
+func (base *Controller) GetVehicles(c *gin.Context) {
+	//	this will use querry to get vehicles registered by the data created
 }

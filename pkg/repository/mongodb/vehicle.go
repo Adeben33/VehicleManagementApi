@@ -25,7 +25,7 @@ func FindVehicle(Id string) (model.Vehicle, string, error) {
 	var existingVehicle model.Vehicle
 	findErr := collection.FindOne(ctx, filter).Decode(&existingVehicle)
 	if findErr != nil {
-		return model.Vehicle{}, fmt.Sprintf("Cannot decode"), fmt.Errorf(findErr.Error())
+		return model.Vehicle{}, fmt.Sprintf("No such vehicle"), fmt.Errorf(findErr.Error())
 	}
 	return existingVehicle, fmt.Sprintf("category found"), nil
 }
@@ -83,6 +83,7 @@ func UpdateVehicle(vehicle model.Vehicle, id string) (*mongo.UpdateResult, error
 	databaseName := config.GetConfig().Mongodb.Database
 	collectionName := constants.VehicleCollection
 	collection := database.GetCollection(client, databaseName, collectionName)
+
 	filter := bson.M{"vehicle_id": id}
 	upsert := true
 	updateOption := options.UpdateOptions{Upsert: &upsert}

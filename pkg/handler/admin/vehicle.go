@@ -8,18 +8,18 @@ import (
 )
 
 func (base *Controller) CreateVehicle(c *gin.Context) {
-	var category model.VehicleCategory
-	err := c.BindJSON(&category)
+	var vehicle model.Vehicle
+	err := c.BindJSON(&vehicle)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = base.Validate.Struct(&category)
+	err = base.Validate.Struct(&vehicle)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	categoryRes, errstring, errString := adminService.CreateCategory(category)
+	categoryRes, errstring, errString := adminService.CreateVehicle(vehicle)
 
 	if errString != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errstring, "Error": errString.Error()})
@@ -31,7 +31,7 @@ func (base *Controller) CreateVehicle(c *gin.Context) {
 func (base *Controller) GetVehicle(c *gin.Context) {
 	Id := c.Param("categoryId")
 
-	categoryResponse, errString, err := adminService.GetCategory(Id)
+	categoryResponse, errString, err := adminService.GetVehicle(Id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
@@ -54,7 +54,7 @@ func (base *Controller) UpdateVehicle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	CategoryRes, err := adminService.UpdateCategory(category, categoryId)
+	CategoryRes, err := adminService.UpdateVehicle(category, categoryId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
@@ -65,7 +65,7 @@ func (base *Controller) UpdateVehicle(c *gin.Context) {
 func (base *Controller) DeleteVehicle(c *gin.Context) {
 	Id := c.Param("categoryId")
 
-	categoryResponse, errString, err := adminService.DeleteCategory(Id)
+	categoryResponse, errString, err := adminService.DeleteVehicle(Id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})

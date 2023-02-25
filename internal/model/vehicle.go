@@ -38,3 +38,8 @@ type VehicleCategoryRes struct {
 	RatePerDay        int
 	VehicleCategoryId string
 }
+
+type IncomingVehicle struct {
+	PlateNumber        string
+	ParkingSpaceNumber string
+}

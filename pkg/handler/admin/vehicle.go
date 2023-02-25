@@ -103,6 +103,16 @@ func (base *Controller) GetVehicleByParkingNumber(c *gin.Context) {
 
 }
 
-func (base *Controller) IncomingVehicle(c *gin.Context) {
-
-}
+//func (base *Controller) IncomingVehicle(c *gin.Context) {
+//	//
+//	var vehicle model.IncomingVehicle
+//	days := c.Query("days")
+//	categoryResponse, errString, err := adminService.IncomingVehicle(vehicle, days)
+//
+//	if err != nil {
+//		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
+//		return
+//	}
+//	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
+//
+//}

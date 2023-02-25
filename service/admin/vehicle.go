@@ -125,3 +125,30 @@ func GetVehicleByParkingSpaceNumber(spaceNumber string) (model.VehicleRes, strin
 	}
 	return vehicleRes, stmt, nil
 }
+
+//func IncomingVehicle(incoming model.IncomingVehicle, days string) {
+//	plateNumber := incoming.PlateNumber
+//	spaceNumber := incoming.ParkingSpaceNumber
+//	vehicle, stmt, err := mongodb.FindVehicleByPlateNumber(plateNumber)
+//	//	get the vehicle id to get if the vehicle has be reserved to parked
+//	reservation,stmt,err := mongodb.FindReservationByVehicleId(vehicle.VehicleId)
+//	//if there is no reservation
+//	if err != nil {
+//	//	create a reservation
+//	//	reservation variable
+//		reserved := model.Reservation{
+//			parkingSpace: spaceNumber,
+//			VehicleId : vehicle.VehicleId,
+//			Status: "Occupied",
+//			StartTime: time.Now().Local().Format(time.DateTime),
+//			EndTime:reservation
+//			AmountPaid:
+//			PaymentStatus
+//			PaymentId
+//			CreatedAt
+//			UpdaatedAt
+//		}
+//		mongodb.CreateReservation(vehicle.VehicleId,spaceNumber,days)
+//	}
+//
+//}

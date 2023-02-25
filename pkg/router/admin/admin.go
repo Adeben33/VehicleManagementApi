@@ -35,7 +35,7 @@ func Admin(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gin.
 	//ManageVehicle
 	{
 		adminUrl.GET("/manageVehicle/entryReport")
-		adminUrl.GET("/manageVehicle/incoming/:vehiclePlateNumber", admin.IncomingVehicle)
+		//adminUrl.POST("/manageVehicle/incoming/:vehiclePlateNumber", admin.IncomingVehicle)
 		adminUrl.GET("/manageVehicle/outcoming/:vehiclePlateNumber")
 	}
 

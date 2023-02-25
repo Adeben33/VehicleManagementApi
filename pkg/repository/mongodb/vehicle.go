@@ -33,7 +33,7 @@ func FindVehicle(Id string) (model.Vehicle, string, error) {
 	return existingVehicle, fmt.Sprintf("Vehicle found"), nil
 }
 
-func FindVehicleByPlateNumber(plateNumber string) (model.VehicleCategory, string, error) {
+func FindVehicleByPlateNumber(plateNumber string) (model.Vehicle, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	client := database.Connection()
@@ -42,10 +42,10 @@ func FindVehicleByPlateNumber(plateNumber string) (model.VehicleCategory, string
 	collection := database.GetCollection(client, databaseName, collectionName)
 	filter := bson.M{"plate_number": plateNumber}
 
-	var existingVehicle model.VehicleCategory
+	var existingVehicle model.Vehicle
 	findErr := collection.FindOne(ctx, filter).Decode(&existingVehicle)
 	if findErr != nil {
-		return model.VehicleCategory{}, fmt.Sprintf("Cannot decode"), fmt.Errorf(findErr.Error())
+		return model.Vehicle{}, fmt.Sprintf("Cannot decode"), fmt.Errorf(findErr.Error())
 	}
 	return existingVehicle, fmt.Sprintf("category found"), nil
 }
@@ -111,13 +111,26 @@ func FindVehicles(timeLow, timeHigh, page, sort string) ([]model.VehicleRes, err
 		{{"created_at", bson.D{{"$lte", timeHigh}}}}}},
 	}
 	//it will be querry based on the created time
+
 	perpage := int64(9)
-	pageInt, _ := strconv.Atoi(page)
+	pageInt, err := strconv.Atoi(page)
+	if err != nil || pageInt < 1 {
+		pageInt = 1
+	}
+
 	skippingLimit := (int64(pageInt) - 1) * perpage
 	findOption := options.Find()
 	findOption = findOption.SetSkip(skippingLimit)
 	findOption = findOption.SetLimit(skippingLimit)
-	findOption = findOption.SetSort(bson.D{{"vehicle_id", 1}})
+
+	var sortId int
+	if sort != " " && sort == "asc" {
+		sortId = 1
+	} else if sort != " " && sort == "desc" {
+		sortId = -1
+	}
+
+	findOption = findOption.SetSort(bson.D{{"vehicle_id", sortId}})
 
 	//	vehicle variable
 	var vehicles []model.Vehicle
@@ -157,7 +170,7 @@ func FindVehicleIdByParkingSpaceNumber(spaceNumber string) (string, string, erro
 	var parkingSpace model.ParkingSpace
 	findErr := collection.FindOne(ctx, filter).Decode(parkingSpace)
 	if findErr != nil {
-		return " ", fmt.Sprintf("No such ParkingSpace"), fmt.Errorf(findErr.Error())
+		return " ", fmt.Sprintf("No such parkingSpace"), fmt.Errorf(findErr.Error())
 	}
 	return parkingSpace.VehicleId, fmt.Sprintf("category found"), nil
 }

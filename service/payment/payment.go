@@ -54,6 +54,7 @@ func DeletePayment(paymentId string) (*mongo.DeleteResult, string, error) {
 	return deleteResult, fmt.Sprintf("Payment deleted successfully"), nil
 }
 
+// Update payment
 func GetPayments(search, page, sort string) ([]model.PaymentRes, string, error) {
 	paymentRes, err := mongodb.FindPayments(search, page, sort)
 	if err != nil {

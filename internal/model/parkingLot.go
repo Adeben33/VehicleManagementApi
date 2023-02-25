@@ -23,4 +23,17 @@ type ParkingSpace struct {
 	VehicleId      string             `json:"vehicleId" bson:"vehicle_id"`
 	ReservedBy     string             `json:"reservedBy" bson:"reserved_by"`
 	ParkingSpaceId string             `json:"parkingSpaceId" bson:"parking_space_id"`
+	CreatedAt      string             `json:"createdAt" bson:"created_at"`
+	UpdatedAt      string             `json:"updatedAt" bson:"updated_at"`
+}
+
+type ParkingSpaceRes struct {
+	Id             primitive.ObjectID `json:"_id" bson:"_id"`
+	SpaceNumber    uint16             `json:"spaceNumber" bson:"space_number"`
+	Charges        uint16             `json:"charges" bson:"charges"`
+	IsOccupied     bool               `json:"isOccupied" bson:"is_occupied"`
+	OccupiedBy     string             `json:"occupiedBy" bson:"occupied_by"` //this is the user string
+	VehicleId      string             `json:"vehicleId" bson:"vehicle_id"`
+	ReservedBy     string             `json:"reservedBy" bson:"reserved_by"`
+	ParkingSpaceId string             `json:"parkingSpaceId" bson:"parking_space_id"`
 }

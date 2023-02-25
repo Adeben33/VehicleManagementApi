@@ -2,6 +2,7 @@ package parkingSpace
 
 import (
 	"github.com/adeben33/vehicleParkingApi/internal/model"
+	parkingService "github.com/adeben33/vehicleParkingApi/service/parkingSpace"
 	paymentService "github.com/adeben33/vehicleParkingApi/service/payment"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -13,18 +14,18 @@ type Controller struct {
 }
 
 func (base *Controller) CreateParkingSpace(c *gin.Context) {
-	var payment model.Payment
-	err := c.BindJSON(&payment)
+	var parkingSpace model.ParkingSpace
+	err := c.BindJSON(&parkingSpace)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = base.Validate.Struct(&payment)
+	err = base.Validate.Struct(&parkingSpace)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	paymentRes, errstring, errString := paymentService.CreatePayment(payment)
+	paymentRes, errstring, errString := parkingService.CreateParkingSpace(parkingSpace)
 
 	if errString != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errstring, "Error": errString.Error()})
@@ -36,10 +37,10 @@ func (base *Controller) CreateParkingSpace(c *gin.Context) {
 func (base *Controller) UpdateParkingSpace(c *gin.Context) {
 
 }
-func (base *Controller) GetParkingSpaceById(c *gin.Context) {
+func (base *Controller) GetParkingSpacebyId(c *gin.Context) {
 	paymentId := c.Param("paymentId")
 
-	paymentRes, errString, err := paymentService.GetPayment(paymentId)
+	paymentRes, errString, err := parkingService. GetParkingSpaceById((paymentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
@@ -55,7 +56,7 @@ func (base *Controller) GetParkingSpaces(c *gin.Context) {
 
 	page := c.Query("page")
 
-	vehicleResponse, errString, err := paymentService.GetPayments(search, page, sort)
+	vehicleResponse, errString, err := parkingService.GetParkingSpaces(search, page, sort)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
@@ -68,7 +69,7 @@ func (base *Controller) GetParkingSpaces(c *gin.Context) {
 func (base *Controller) DeleteParkingSpace(c *gin.Context) {
 	paymentId := c.Param("paymentId")
 
-	categoryResponse, errString, err := paymentService.DeletePayment(paymentId)
+	categoryResponse, errString, err := parkingService.DeleteParkingSpace(paymentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})

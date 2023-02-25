@@ -34,7 +34,6 @@ func (base *PaymentController) CreatePayment(c *gin.Context) {
 }
 
 func (base *PaymentController) UpdatePaymment(c *gin.Context) {
-
 }
 func (base *PaymentController) GetPaymentById(c *gin.Context) {
 	paymentId := c.Param("paymentId")

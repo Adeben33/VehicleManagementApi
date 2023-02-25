@@ -9,29 +9,22 @@ import (
 	"time"
 )
 
-func CreateParkingSpace(payment model.Payment) (model.PaymentRes, string, error) {
+func CreateParkingSpace(space model.ParkingSpace) (model.ParkingSpace, string, error) {
 	//save the payment
-	payment.CreatedAt = time.Now().Local().Format(time.DateTime)
-	payment.UpdatedAt = time.Now().Local().Format(time.DateTime)
-	payment.Id = primitive.NewObjectID()
-	payment.PaymentId = payment.Id.Hex()
-	_, err := mongodb.SavePayment(payment)
+	space.CreatedAt = time.Now().Local().Format(time.DateTime)
+	space.UpdatedAt = time.Now().Local().Format(time.DateTime)
+	space.Id = primitive.NewObjectID()
+	space.ParkingSpaceId = space.Id.Hex()
+	_, err := mongodb.CreateParkingSpace(space)
 	if err != nil {
-		return model.PaymentRes{}, fmt.Sprintf("Error saving into database"), fmt.Errorf(err.Error())
+		return model.ParkingSpace{}, fmt.Sprintf("Error saving into database"), fmt.Errorf(err.Error())
 	}
-	paymentResponse := model.PaymentRes{
-		UserId:        payment.UserId,
-		ReservationId: payment.ReservationId,
-		Amount:        payment.Amount,
-		PaymentMethod: payment.PaymentMethod,
-		Status:        payment.Status,
-		PaymentId:     payment.PaymentId,
-	}
-	return paymentResponse, fmt.Sprintf("Category saved successfully into the db"), nil
+
+	return space, fmt.Sprintf("Category saved successfully into the db"), nil
 }
 
 func GetParkingSpaceById(paymentId string) (model.PaymentRes, string, error) {
-	payment, stmt, err := mongodb.GetPayment(paymentId)
+	payment, stmt, err := mongodb.GetParkingSpaceById(paymentId)
 	if err != nil {
 		return model.PaymentRes{}, stmt, err
 	}
@@ -54,7 +47,7 @@ func DeleteParkingSpace(paymentId string) (*mongo.DeleteResult, string, error) {
 	return deleteResult, fmt.Sprintf("Payment deleted successfully"), nil
 }
 
-func GetParkingSpace(search, page, sort string) ([]model.PaymentRes, string, error) {
+func GetParkingSpaces(search, page, sort string) ([]model.PaymentRes, string, error) {
 	paymentRes, err := mongodb.FindPayments(search, page, sort)
 	if err != nil {
 		return []model.PaymentRes{}, fmt.Sprintf("paymentRes not generated"), nil

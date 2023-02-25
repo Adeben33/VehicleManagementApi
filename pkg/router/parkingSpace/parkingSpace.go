@@ -16,7 +16,7 @@ func Parking(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gi
 			ParkingSpaceUrl.GET("/payment/:paymentId", parkingSpace.GetParkingSpacebyId)
 			ParkingSpaceUrl.PUT("/payment/:paymentId", parkingSpace.UpdateParkingSpace)
 			ParkingSpaceUrl.DELETE("/payment", parkingSpace.DeleteParkingSpace)
-			ParkingSpaceUrl.GET("/payment", parkingSpace.GetParkingSpace)
+			ParkingSpaceUrl.GET("/payment", parkingSpace.GetParkingSpaces)
 
 		}
 	}

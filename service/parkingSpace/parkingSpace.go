@@ -23,24 +23,24 @@ func CreateParkingSpace(space model.ParkingSpace) (model.ParkingSpace, string, e
 	return space, fmt.Sprintf("Category saved successfully into the db"), nil
 }
 
-func GetParkingSpaceById(paymentId string) (model.PaymentRes, string, error) {
+func GetParkingSpaceById(paymentId string) (model.ParkingSpaceRes, string, error) {
 	payment, stmt, err := mongodb.GetParkingSpaceById(paymentId)
 	if err != nil {
-		return model.PaymentRes{}, stmt, err
+		return model.ParkingSpaceRes{}, stmt, err
 	}
-	paymentRes := model.PaymentRes{
-		UserId:        payment.UserId,
-		ReservationId: payment.ReservationId,
-		Amount:        payment.Amount,
-		PaymentMethod: payment.PaymentMethod,
-		Status:        payment.Status,
-		PaymentId:     payment.PaymentId,
+	parkingSpaceRes := model.ParkingSpaceRes{
+		SpaceNumber:    payment.SpaceNumber,
+		Charges:        payment.Charges,
+		IsOccupied:     payment.IsOccupied,
+		VehicleId:      payment.VehicleId,
+		ReservedBy:     payment.ReservedBy,
+		ParkingSpaceId: payment.ParkingSpaceId,
 	}
-	return paymentRes, fmt.Sprintf("Model generated"), nil
+	return parkingSpaceRes, fmt.Sprintf("Model generated"), nil
 }
 
 func DeleteParkingSpace(paymentId string) (*mongo.DeleteResult, string, error) {
-	deleteResult, stmt, err := mongodb.DeletePayment(paymentId)
+	deleteResult, stmt, err := mongodb.DeleteParkingSpace(paymentId)
 	if err != nil {
 		return nil, stmt, err
 	}
@@ -48,7 +48,7 @@ func DeleteParkingSpace(paymentId string) (*mongo.DeleteResult, string, error) {
 }
 
 func GetParkingSpaces(search, page, sort string) ([]model.PaymentRes, string, error) {
-	paymentRes, err := mongodb.FindPayments(search, page, sort)
+	paymentRes, err := mongodb.FindParkingSpace(search, page, sort)
 	if err != nil {
 		return []model.PaymentRes{}, fmt.Sprintf("paymentRes not generated"), nil
 	}

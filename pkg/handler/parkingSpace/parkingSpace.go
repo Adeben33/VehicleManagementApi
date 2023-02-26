@@ -3,7 +3,6 @@ package parkingSpace
 import (
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	parkingService "github.com/adeben33/vehicleParkingApi/service/parkingSpace"
-	paymentService "github.com/adeben33/vehicleParkingApi/service/payment"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -40,7 +39,7 @@ func (base *Controller) UpdateParkingSpace(c *gin.Context) {
 func (base *Controller) GetParkingSpacebyId(c *gin.Context) {
 	paymentId := c.Param("paymentId")
 
-	paymentRes, errString, err := parkingService. GetParkingSpaceById((paymentId)
+	paymentRes, errString, err := parkingService.GetParkingSpaceById(paymentId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})

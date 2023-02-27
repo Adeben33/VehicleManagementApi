@@ -1,13 +1,17 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Reservation struct {
-	Id            primitive.ObjectId `bson:"_id"`
+	Id            primitive.ObjectID `bson:"_id"`
 	userId        string             `json:"userId" bson:"user_id"`
-	ParkingLotId  string             `json:"parkingLotId" bson:"parking_lot_id"`
+	ParkingSpace  string             `json:"parkingSpace" bson:"parking_space"`
 	VehicleId     string             `json:"vehicleId" bson:"vehicle_id"`
+	Status        string             `json:"status" bson:"status"` //parked,completed,vacant
 	StartTime     string             `json:"startTime" bson:"start_time"`
 	EndTime       string             `json:"endTime" bson:"end_time"`
 	AmountPaid    uint               `json:"amountPaid" bson:"amount_paid"`
+	PaymentId     string             `json:"paymentId" bson:"payment_id"`
 	PaymentStatus string             `json:"paymentStatus" `
 	CreatedAt     string             `json:"createdAt" bson:"created_at"`
 	UpdatedAt     string             `json:"updatedAt" bson:"updated_at"`

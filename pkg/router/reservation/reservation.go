@@ -12,11 +12,11 @@ func Reservation(r *gin.Engine, validate *validator.Validate, ApiVersion string)
 	ReservationUrl := r.Group(fmt.Sprintf("/api/%v", ApiVersion))
 	{
 		{
-			ReservationUrl.POST("/parkingSpace", Reservation.CreateReservation)
-			ReservationUrl.GET("/parkingSpace/:parkingSpaceId", Reservation.GetParkingSpacebyId)
-			ReservationUrl.PUT("/parkingSpace/:parkingSpaceId", Reservation.UpdateParkingSpace)
-			ReservationUrl.DELETE("/parkingSpace/:parkingSpaceId", Reservation.DeleteParkingSpace)
-			ReservationUrl.GET("/parkingSpace", Reservation.GetParkingSpaces)
+			ReservationUrl.POST("/reservation", Reservation.CreateReservation)
+			ReservationUrl.GET("/reservation/:reservationId", Reservation.GetReservationById)
+			ReservationUrl.PUT("/reservation/:reservationId", Reservation.UpdateParkingSpace)
+			ReservationUrl.DELETE("/reservation/:reservationId", Reservation.DeleteReservation)
+			ReservationUrl.GET("/reservation", Reservation.GetReservations)
 
 		}
 	}

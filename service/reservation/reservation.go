@@ -34,24 +34,28 @@ func CreateReservation(reservation model.Reservation) (model.ReservationRes, str
 	return reservationResponse, fmt.Sprintf("Category saved successfully into the db"), nil
 }
 
-func GetPayment(paymentId string) (model.PaymentRes, string, error) {
-	payment, stmt, err := mongodb.GetPayment(paymentId)
+func GetReservationById(reservationId string) (model.ReservationRes, string, error) {
+	reservation, stmt, err := mongodb.GetReservationById(reservationId)
 	if err != nil {
-		return model.PaymentRes{}, stmt, err
+		return model.ReservationRes{}, stmt, err
 	}
-	paymentRes := model.PaymentRes{
-		UserId:        payment.UserId,
-		ReservationId: payment.ReservationId,
-		Amount:        payment.Amount,
-		PaymentMethod: payment.PaymentMethod,
-		Status:        payment.Status,
-		PaymentId:     payment.PaymentId,
+
+	reservationRes := model.ReservationRes{
+		ParkingSpace:  reservation.ParkingSpace,
+		VehicleId:     reservation.VehicleId,
+		Status:        reservation.Status,
+		StartTime:     reservation.StartTime,
+		EndTime:       reservation.EndTime,
+		AmountPaid:    reservation.AmountPaid,
+		PaymentId:     reservation.PaymentId,
+		PaymentStatus: reservation.PaymentStatus,
+		ReservationId: reservation.ReservationId,
 	}
-	return paymentRes, fmt.Sprintf("Model generated"), nil
+	return reservationRes, fmt.Sprintf("Model generated"), nil
 }
 
-func DeletePayment(paymentId string) (*mongo.DeleteResult, string, error) {
-	deleteResult, stmt, err := mongodb.DeletePayment(paymentId)
+func DeleteReservation(reservationId string) (*mongo.DeleteResult, string, error) {
+	deleteResult, stmt, err := mongodb.DeleteReservation(reservationId)
 	if err != nil {
 		return nil, stmt, err
 	}

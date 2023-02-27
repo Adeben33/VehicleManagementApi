@@ -12,24 +12,6 @@ import (
 	"time"
 )
 
-func FindReservationByVehicleId(vehicleId string) (model.Reservation, string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-	client := database.Connection()
-	databaseName := config.GetConfig().Mongodb.Database
-	collectionName := constants.ReservationCollection
-	collection := database.GetCollection(client, databaseName, collectionName)
-	filter := bson.M{"vehicle_id": vehicleId}
-
-	var reservation model.Reservation
-	findErr := collection.FindOne(ctx, filter).Decode(&reservation)
-	if findErr != nil {
-		return model.Reservation{}, fmt.Sprintf("No such Reservation"), fmt.Errorf(findErr.Error())
-	}
-
-	return reservation, fmt.Sprintf("Vehicle found"), nil
-}
-
 func CreateReservation(reservation model.Reservation) (*mongo.InsertOneResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -42,4 +24,37 @@ func CreateReservation(reservation model.Reservation) (*mongo.InsertOneResult, e
 		return nil, insertErr
 	}
 	return result, nil
+}
+
+func GetReservationById(reservationId string) (model.Reservation, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ReservationCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+	filter := bson.M{"reservation_id": reservationId}
+
+	var existingReservation model.Reservation
+	findErr := collection.FindOne(ctx, filter).Decode(&existingReservation)
+	if findErr != nil {
+		return model.Reservation{}, fmt.Sprintf("No such vehicle"), fmt.Errorf(findErr.Error())
+	}
+
+	return existingReservation, fmt.Sprintf("Vehicle found"), nil
+}
+
+func DeleteReservation(reservationId string) (*mongo.DeleteResult, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ReservationCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+	filter := bson.M{"reservation_id": reservationId}
+	result, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return nil, fmt.Sprintf("Cannot decode"), err
+	}
+	return result, fmt.Sprintf("category found"), nil
 }

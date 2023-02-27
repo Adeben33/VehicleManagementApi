@@ -36,10 +36,10 @@ func (base *Controller) CreateReservation(c *gin.Context) {
 func (base *Controller) UpdatePaymment(c *gin.Context) {
 }
 
-func (base *Controller) GetPaymentById(c *gin.Context) {
-	paymentId := c.Param("paymentId")
+func (base *Controller) GetReservationById(c *gin.Context) {
+	reservationId := c.Param("reservationId")
 
-	paymentRes, errString, err := reservationService.GetPayment(paymentId)
+	paymentRes, errString, err := reservationService.GetReservationById(reservationId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
@@ -65,15 +65,15 @@ func (base *Controller) GetPayments(c *gin.Context) {
 
 }
 
-func (base *Controller) DeletePayment(c *gin.Context) {
-	paymentId := c.Param("paymentId")
+func (base *Controller) DeleteReservation(c *gin.Context) g {
+	reservationId := c.Param("reservationId")
 
-	categoryResponse, errString, err := reservationService.DeletePayment(paymentId)
+	result, errString, err := reservationService.DeleteReservation(reservationId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
+	c.JSON(http.StatusOK, gin.H{"Details": result})
 
 }

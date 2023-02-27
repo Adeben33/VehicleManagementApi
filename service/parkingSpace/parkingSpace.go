@@ -54,3 +54,48 @@ func GetParkingSpaces(search, page, sort string) ([]model.ParkingSpaceRes, strin
 	}
 	return parkingSpaceRes, fmt.Sprintf("paymentRes generated"), nil
 }
+
+func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) (model.ParkingSpaceRes, error) {
+	existingParkingSpace, _, err := mongodb.GetParkingSpaceById(parkingSpaceId)
+	if err != nil {
+		return model.ParkingSpaceRes{}, err
+	}
+	if parkingSpace.Charges != 0 {
+		existingParkingSpace.Charges = parkingSpace.Charges
+	}
+	if parkingSpace.SpaceNumber != 0 {
+		existingParkingSpace.SpaceNumber = parkingSpace.SpaceNumber
+	}
+	if parkingSpace.ReservedBy != " " {
+		existingParkingSpace.ReservedBy = parkingSpace.ReservedBy
+	}
+	if parkingSpace.OccupiedBy != " " {
+		existingParkingSpace.OccupiedBy = parkingSpace.OccupiedBy
+	}
+	if parkingSpace.VehicleId != " " {
+		existingParkingSpace.VehicleId = parkingSpace.VehicleId
+	}
+	if parkingSpace.ReservedBy != " " {
+		existingParkingSpace.ReservedBy = parkingSpace.ReservedBy
+	}
+
+	if parkingSpace.IsOccupied != false {
+		existingParkingSpace.IsOccupied = parkingSpace.IsOccupied
+	}
+
+	existingParkingSpace.UpdatedAt = time.Now().Local().Format(time.DateTime)
+	_, err = mongodb.UpdateParkingSpace(existingParkingSpace, parkingSpaceId)
+	if err != nil {
+		return model.ParkingSpaceRes{}, err
+	}
+	response := model.ParkingSpaceRes{
+		SpaceNumber:    existingParkingSpace.SpaceNumber,
+		Charges:        existingParkingSpace.Charges,
+		IsOccupied:     existingParkingSpace.IsOccupied,
+		OccupiedBy:     existingParkingSpace.OccupiedBy,
+		VehicleId:      existingParkingSpace.VehicleId,
+		ReservedBy:     existingParkingSpace.ReservedBy,
+		ParkingSpaceId: existingParkingSpace.ParkingSpaceId,
+	}
+	return response, nil
+}

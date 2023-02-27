@@ -144,3 +144,22 @@ func FindParkingSpace(search, page, sort string) ([]model.ParkingSpaceRes, error
 	return parkingSpaceResponse, nil
 
 }
+
+func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ParkingSpaceCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+
+	filter := bson.M{"vehicle_id": parkingSpaceId}
+	upsert := true
+	updateOption := options.UpdateOptions{Upsert: &upsert}
+	updateVehicle := bson.D{{"$set", bson.D{{"spaceNumber", parkingSpace.SpaceNumber}, {"Occupied_by", parkingSpace.OccupiedBy}, {"is_occupied", parkingSpace.IsOccupied}, {"charges", parkingSpace.Charges}, {"vehicle_id", parkingSpace.VehicleId}, {"reserved_by", parkingSpace.ReservedBy}, {"updated_at", parkingSpace.UpdatedAt}}}}
+	result, UpdateErr := collection.UpdateOne(ctx, filter, updateVehicle, &updateOption)
+	if UpdateErr != nil {
+		return nil, UpdateErr
+	}
+	return result, nil
+}

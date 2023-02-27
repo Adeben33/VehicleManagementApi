@@ -17,3 +17,16 @@ type Reservation struct {
 	UpdatedAt     string             `json:"updatedAt" bson:"updated_at"`
 	ReservationId string             `json:"reservationId" bson:"reservation_id"`
 }
+
+type ReservationRes struct {
+	userId        string `json:"userId" bson:"user_id"`
+	ParkingSpace  string `json:"parkingSpace" bson:"parking_space"`
+	VehicleId     string `json:"vehicleId" bson:"vehicle_id"`
+	Status        string `json:"status" bson:"status"` //parked,completed,vacant
+	StartTime     string `json:"startTime" bson:"start_time"`
+	EndTime       string `json:"endTime" bson:"end_time"`
+	AmountPaid    uint   `json:"amountPaid" bson:"amount_paid"`
+	PaymentId     string `json:"paymentId" bson:"payment_id"`
+	PaymentStatus string `json:"paymentStatus" `
+	ReservationId string `json:"reservationId" bson:"reservation_id"`
+}

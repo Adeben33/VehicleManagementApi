@@ -8,6 +8,7 @@ import (
 	"github.com/adeben33/vehicleParkingApi/internal/database"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
@@ -29,16 +30,16 @@ func FindReservationByVehicleId(vehicleId string) (model.Reservation, string, er
 	return reservation, fmt.Sprintf("Vehicle found"), nil
 }
 
-//func CreateReservation(vehicleId, spaceNumber, days string) {
-//	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-//	defer cancel()
-//	client := database.Connection()
-//	databaseName := config.GetConfig().Mongodb.Database
-//	collectionName := constants.VehicleCollection
-//	collection := database.GetCollection(client, databaseName, collectionName)
-//	result, insertErr := collection.InsertOne(ctx, vehicle)
-//	if insertErr != nil {
-//		return nil, insertErr
-//	}
-//	return result, nil
-//}
+func CreateReservation(reservation model.Reservation) (*mongo.InsertOneResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ReservationCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+	result, insertErr := collection.InsertOne(ctx, reservation)
+	if insertErr != nil {
+		return nil, insertErr
+	}
+	return result, nil
+}

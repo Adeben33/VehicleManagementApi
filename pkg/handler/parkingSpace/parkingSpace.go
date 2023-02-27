@@ -34,8 +34,28 @@ func (base *Controller) CreateParkingSpace(c *gin.Context) {
 }
 
 func (base *Controller) UpdateParkingSpace(c *gin.Context) {
+	parkingSpaceId := c.Param("parkingSpaceId")
+	var parkingSpace model.ParkingSpace
+	err := c.BindJSON(&parkingSpace)
 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = base.Validate.Struct(&parkingSpace)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	paymentRes, err := parkingService.UpdateParkingSpace(parkingSpace, parkingSpaceId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
+
 func (base *Controller) GetParkingSpacebyId(c *gin.Context) {
 	paymentId := c.Param("::parkingSpaceId''")
 

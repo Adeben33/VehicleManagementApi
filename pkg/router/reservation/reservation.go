@@ -14,7 +14,7 @@ func Reservation(r *gin.Engine, validate *validator.Validate, ApiVersion string)
 		{
 			ReservationUrl.POST("/reservation", Reservation.CreateReservation)
 			ReservationUrl.GET("/reservation/:reservationId", Reservation.GetReservationById)
-			ReservationUrl.PUT("/reservation/:reservationId", Reservation.UpdateParkingSpace)
+			ReservationUrl.PUT("/reservation/:reservationId", Reservation.UpdateReservation)
 			ReservationUrl.DELETE("/reservation/:reservationId", Reservation.DeleteReservation)
 			ReservationUrl.GET("/reservation", Reservation.GetReservations)
 

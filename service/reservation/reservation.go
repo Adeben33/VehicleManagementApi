@@ -63,10 +63,62 @@ func DeleteReservation(reservationId string) (*mongo.DeleteResult, string, error
 }
 
 // Update payment
-func GetPayments(search, page, sort string) ([]model.PaymentRes, string, error) {
-	paymentRes, err := mongodb.FindPayments(search, page, sort)
+func UpdateReservation(reservation model.Reservation, reservationId string) (model.ReservationRes, error) {
+	existingReservation, _, err := mongodb.GetReservationById(reservationId)
 	if err != nil {
-		return []model.PaymentRes{}, fmt.Sprintf("paymentRes not generated"), nil
+		return model.ReservationRes{}, err
 	}
-	return paymentRes, fmt.Sprintf("paymentRes generated"), nil
+
+	if reservation.AmountPaid != 0 {
+		existingReservation.AmountPaid = reservation.AmountPaid
+	}
+	if reservation.ParkingSpace != " " {
+		existingReservation.ParkingSpace = reservation.ParkingSpace
+	}
+	if reservation.Status != " " {
+		existingReservation.Status = reservation.Status
+	}
+
+	if reservation.PaymentId != " " {
+		existingReservation.PaymentId = reservation.PaymentId
+	}
+	if reservation.StartTime != " " {
+		existingReservation.StartTime = reservation.StartTime
+	}
+	if reservation.EndTime != " " {
+		existingReservation.EndTime = reservation.EndTime
+	}
+	if reservation.PaymentStatus != " " {
+		existingReservation.PaymentStatus = reservation.PaymentStatus
+	}
+	if reservation.VehicleId != " " {
+		existingReservation.VehicleId = reservation.VehicleId
+	}
+	existingReservation.UpdatedAt = time.Now().Local().Format(time.DateTime)
+
+	_, err = mongodb.UpdateReservation(existingReservation, reservationId)
+
+	if err != nil {
+		return model.ReservationRes{}, err
+	}
+	response := model.ReservationRes{
+		ParkingSpace:  reservation.ParkingSpace,
+		VehicleId:     reservation.VehicleId,
+		Status:        reservation.Status,
+		StartTime:     reservation.StartTime,
+		EndTime:       reservation.EndTime,
+		AmountPaid:    reservation.AmountPaid,
+		PaymentId:     reservation.PaymentId,
+		PaymentStatus: reservation.PaymentStatus,
+		ReservationId: reservation.ReservationId,
+	}
+	return response, nil
+}
+
+func GetReservation(search, page, sort string) ([]model.ReservationRes, string, error) {
+	reservationRes, err := mongodb.FindReservations(search, page, sort)
+	if err != nil {
+		return []model.ReservationRes{}, fmt.Sprintf("paymentRes not generated"), nil
+	}
+	return reservationRes, fmt.Sprintf("paymentRes generated"), nil
 }

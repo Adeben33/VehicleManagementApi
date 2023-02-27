@@ -33,7 +33,26 @@ func (base *Controller) CreateReservation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
 
-func (base *Controller) UpdatePaymment(c *gin.Context) {
+func (base *Controller) UpdateReservation(c *gin.Context) {
+	reservationId := c.Param("reservationId")
+	var reservation model.Reservation
+	err := c.BindJSON(&reservation)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = base.Validate.Struct(&reservation)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	CategoryRes, err := reservationService.UpdateReservation(reservation, reservationId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error(), "number": 1})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"User Data": CategoryRes})
 }
 
 func (base *Controller) GetReservationById(c *gin.Context) {
@@ -48,14 +67,14 @@ func (base *Controller) GetReservationById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
 
-func (base *Controller) GetPayments(c *gin.Context) {
+func (base *Controller) GetReservations(c *gin.Context) {
 	//	this will use querry to get vehicles registered by the data created
 	sort := c.Query("sort")
 	search := c.Query("search")
 
 	page := c.Query("page")
 
-	vehicleResponse, errString, err := reservationService.GetPayments(search, page, sort)
+	vehicleResponse, errString, err := reservationService.GetReservation(search, page, sort)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
@@ -65,7 +84,7 @@ func (base *Controller) GetPayments(c *gin.Context) {
 
 }
 
-func (base *Controller) DeleteReservation(c *gin.Context) g {
+func (base *Controller) DeleteReservation(c *gin.Context) {
 	reservationId := c.Param("reservationId")
 
 	result, errString, err := reservationService.DeleteReservation(reservationId)

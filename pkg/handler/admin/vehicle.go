@@ -57,7 +57,7 @@ func (base *Controller) UpdateVehicle(c *gin.Context) {
 	CategoryRes, err := adminService.UpdateVehicle(vehicle, vehicleId)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error(), "number": 1})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": CategoryRes})

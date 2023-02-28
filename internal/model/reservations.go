@@ -5,7 +5,7 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 type Reservation struct {
 	Id            primitive.ObjectID `bson:"_id"`
 	userId        string             `json:"userId" bson:"user_id"`
-	ParkingSpace  string             `json:"parkingSpace" bson:"parking_space"`
+	ParkingSpace  uint16             `json:"parkingSpace" bson:"parking_space"`
 	VehicleId     string             `json:"vehicleId" bson:"vehicle_id"`
 	Status        string             `json:"status" bson:"status"` //parked,completed,vacant
 	StartTime     string             `json:"startTime" bson:"start_time"`
@@ -20,7 +20,7 @@ type Reservation struct {
 
 type ReservationRes struct {
 	userId        string `json:"userId" bson:"user_id"`
-	ParkingSpace  string `json:"parkingSpace" bson:"parking_space"`
+	ParkingSpace  uint16 `json:"parkingSpace" bson:"parking_space"`
 	VehicleId     string `json:"vehicleId" bson:"vehicle_id"`
 	Status        string `json:"status" bson:"status"` //parked,completed,vacant
 	StartTime     string `json:"startTime" bson:"start_time"`

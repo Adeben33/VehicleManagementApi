@@ -72,7 +72,7 @@ func DeleteVehicle(id string) (*mongo.DeleteResult, string, error) {
 }
 
 func UpdateVehicle(vehicle model.Vehicle, id string) (model.VehicleRes, error) {
-	existingVehicle, _, err := mongodb.FindVehicle(vehicle.VehicleId)
+	existingVehicle, _, err := mongodb.FindVehicle(id)
 	if err != nil {
 		return model.VehicleRes{}, err
 	}
@@ -88,13 +88,18 @@ func UpdateVehicle(vehicle model.Vehicle, id string) (model.VehicleRes, error) {
 	if vehicle.Color != " " {
 		existingVehicle.Color = vehicle.Color
 	}
+	if vehicle.PlateNumber != " " {
+		existingVehicle.PlateNumber = vehicle.PlateNumber
+	}
+
 	existingVehicle.UpdatedAt = time.Now().Local().Format(time.DateTime)
-	_, err = mongodb.UpdateVehicle(existingVehicle, vehicle.VehicleId)
+	_, err = mongodb.UpdateVehicle(existingVehicle, id)
 	if err != nil {
 		return model.VehicleRes{}, err
 	}
 	response := model.VehicleRes{
-		VehicleCategoryId: existingVehicle.VehicleId,
+		VehicleCategoryId: existingVehicle.VehicleCategoryId,
+		Color:             existingVehicle.Color,
 		Make:              existingVehicle.Make,
 		Model:             existingVehicle.Model,
 		Year:              existingVehicle.Year,

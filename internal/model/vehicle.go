@@ -17,12 +17,13 @@ type Vehicle struct {
 }
 
 type VehicleRes struct {
-	VehicleCategoryId string `json:"vehicleCategoryId" bson:"vehicle_category_id"`
-	Make              string `json:"make" bson:"make"`
-	Model             string `json:"model" bson:"model"`
-	Year              string `json:"year" bson:"year"`
-	PlateNumber       string `json:"plateNumber" bson:"plate_number"`
-	VehicleId         string `json:"vehicleId" bson:"vehicle_id"`
+	VehicleCategoryId string `json:"vehicleCategoryId" `
+	Color             string `json:"color" `
+	Make              string `json:"make" `
+	Model             string `json:"model"`
+	Year              string `json:"year" `
+	PlateNumber       string `json:"plateNumber" `
+	VehicleId         string `json:"vehicleId" `
 }
 type VehicleCategory struct {
 	Id                primitive.ObjectID `bson:"_id"`

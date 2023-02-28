@@ -8,7 +8,6 @@ import (
 	"github.com/adeben33/vehicleParkingApi/internal/database"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -48,6 +47,24 @@ func GetReservationById(reservationId string) (model.Reservation, string, error)
 	return existingReservation, fmt.Sprintf("Vehicle found"), nil
 }
 
+func FindReservationByParkingSpace(parkingSpace uint16) (model.Reservation, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ReservationCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+	filter := bson.M{"parking_space": parkingSpace}
+
+	var existingReservation model.Reservation
+	findErr := collection.FindOne(ctx, filter).Decode(&existingReservation)
+	if findErr != nil {
+		return model.Reservation{}, fmt.Sprintf("No such reservation"), fmt.Errorf(findErr.Error())
+	}
+
+	return existingReservation, fmt.Sprintf("reservation found"), nil
+}
+
 func DeleteReservation(reservationId string) (*mongo.DeleteResult, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -74,7 +91,7 @@ func UpdateReservation(reservation model.Reservation, reservationId string) (*mo
 	filter := bson.M{"reservation_id": reservationId}
 	upsert := true
 	updateOption := options.UpdateOptions{Upsert: &upsert}
-	updateVehicle := bson.D{{"$set", bson.D{{"amount_paid", reservation.AmountPaid}, {"status", reservation.Status}, {"parking_space", reservation.ParkingSpace}, {"status", reservation.PaymentId}, {"start_time", reservation.StartTime}, {"end_time", reservation.EndTime}, {"payment_status", reservation.PaymentStatus}, {"vehicle_id", reservation.VehicleId}, {"update_at", reservation.UpdatedAt}}}}
+	updateVehicle := bson.D{{"$set", bson.D{{"amount_paid", reservation.AmountPaid}, {"status", reservation.Status}, {"parking_space", reservation.ParkingSpace}, {"start_time", reservation.StartTime}, {"reservation_id", reservation.ReservationId}, {"end_time", reservation.EndTime}, {"payment_status", reservation.PaymentStatus}, {"vehicle_id", reservation.VehicleId}, {"update_at", reservation.UpdatedAt}}}}
 	result, UpdateErr := collection.UpdateOne(ctx, filter, updateVehicle, &updateOption)
 	if UpdateErr != nil {
 		return nil, UpdateErr
@@ -94,7 +111,11 @@ func FindReservations(search, page, sort string) ([]model.ReservationRes, error)
 
 	//it will be querry based on the created time
 	perpage := int64(9)
+
 	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
+	}
 	skippingLimit := (int64(pageInt) - 1) * perpage
 	findOption := options.Find()
 	findOption = findOption.SetSkip(skippingLimit)
@@ -109,58 +130,15 @@ func FindReservations(search, page, sort string) ([]model.ReservationRes, error)
 	}
 	filter := bson.M{}
 	if search != " " {
-
 		filter = bson.M{
 			"$or": []bson.M{
-				{"user_id": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"reservation_id": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"vehicle_id": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"status": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"paymentI_id": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"start_time": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"end_time": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
+				{"user_id": search},
+				{"reservation_id": search},
+				{"vehicle_id": search},
+				{"status": search},
+				{"paymentI_id": search},
+				{"start_time": search},
+				{"end_time": search},
 			},
 		}
 	}

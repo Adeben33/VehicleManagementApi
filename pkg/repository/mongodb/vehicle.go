@@ -113,20 +113,8 @@ func GetVehicles(search, page, sort string) ([]model.VehicleRes, error) {
 
 		filter = bson.M{
 			"$or": []bson.M{
-				{"Vehicle_id ": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"user_id ": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
+				{"Vehicle_id ": search},
+				{"user_id ": search},
 				{"plate_number": bson.M{
 					"$regex": primitive.Regex{
 						Pattern: search,
@@ -134,34 +122,12 @@ func GetVehicles(search, page, sort string) ([]model.VehicleRes, error) {
 					},
 				},
 				},
-				{"color": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"make": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"model": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
-				{"year": bson.M{
-					"$regex": primitive.Regex{
-						Pattern: search,
-						Options: "i",
-					},
-				},
-				},
+				{"color": search},
+
+				{"make": search},
+
+				{"model": search},
+				{"year": search},
 			},
 		}
 	}
@@ -192,6 +158,7 @@ func GetVehicles(search, page, sort string) ([]model.VehicleRes, error) {
 
 	return vehicleResponses, nil
 }
+
 func UpdateVehicle(vehicle model.Vehicle, id string) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -203,7 +170,7 @@ func UpdateVehicle(vehicle model.Vehicle, id string) (*mongo.UpdateResult, error
 	filter := bson.M{"vehicle_id": id}
 	upsert := true
 	updateOption := options.UpdateOptions{Upsert: &upsert}
-	updateVehicle := bson.D{{"$set", bson.D{{"make", vehicle.Make}, {"year", vehicle.Year}, {"model", vehicle.Model}, {"plate_number", vehicle.PlateNumber}, {"updated_at", vehicle.UpdatedAt}}}}
+	updateVehicle := bson.D{{"$set", bson.D{{"make", vehicle.Make}, {"vehicle_id", vehicle.VehicleId}, {"year", vehicle.Year}, {"model", vehicle.Model}, {"plate_number", vehicle.PlateNumber}, {"color", vehicle.Color}, {"updated_at", vehicle.UpdatedAt}}}}
 	result, UpdateErr := collection.UpdateOne(ctx, filter, updateVehicle, &updateOption)
 	if UpdateErr != nil {
 		return nil, UpdateErr

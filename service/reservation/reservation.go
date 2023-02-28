@@ -1,6 +1,7 @@
 package reservation
 
 import (
+	"errors"
 	"fmt"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"github.com/adeben33/vehicleParkingApi/pkg/repository/mongodb"
@@ -11,12 +12,16 @@ import (
 
 func CreateReservation(reservation model.Reservation) (model.ReservationRes, string, error) {
 	//save the payment
+	_, _, err := mongodb.FindReservationByParkingSpace(reservation.ParkingSpace)
+	if err == nil {
+		return model.ReservationRes{}, fmt.Sprintf("The space is already reserved"), errors.New("The space is already reserved")
+	}
 	reservation.CreatedAt = time.Now().Local().Format(time.DateTime)
 	reservation.UpdatedAt = time.Now().Local().Format(time.DateTime)
 	reservation.Id = primitive.NewObjectID()
-	reservation.PaymentId = reservation.Id.Hex()
+	reservation.ReservationId = reservation.Id.Hex()
 
-	_, err := mongodb.CreateReservation(reservation)
+	_, err = mongodb.CreateReservation(reservation)
 	if err != nil {
 		return model.ReservationRes{}, fmt.Sprintf("Error saving into database"), fmt.Errorf(err.Error())
 	}
@@ -72,7 +77,7 @@ func UpdateReservation(reservation model.Reservation, reservationId string) (mod
 	if reservation.AmountPaid != 0 {
 		existingReservation.AmountPaid = reservation.AmountPaid
 	}
-	if reservation.ParkingSpace != " " {
+	if reservation.ParkingSpace != 0 {
 		existingReservation.ParkingSpace = reservation.ParkingSpace
 	}
 	if reservation.Status != " " {
@@ -102,15 +107,15 @@ func UpdateReservation(reservation model.Reservation, reservationId string) (mod
 		return model.ReservationRes{}, err
 	}
 	response := model.ReservationRes{
-		ParkingSpace:  reservation.ParkingSpace,
-		VehicleId:     reservation.VehicleId,
-		Status:        reservation.Status,
-		StartTime:     reservation.StartTime,
-		EndTime:       reservation.EndTime,
-		AmountPaid:    reservation.AmountPaid,
-		PaymentId:     reservation.PaymentId,
-		PaymentStatus: reservation.PaymentStatus,
-		ReservationId: reservation.ReservationId,
+		ParkingSpace:  existingReservation.ParkingSpace,
+		VehicleId:     existingReservation.VehicleId,
+		Status:        existingReservation.Status,
+		StartTime:     existingReservation.StartTime,
+		EndTime:       existingReservation.EndTime,
+		AmountPaid:    existingReservation.AmountPaid,
+		PaymentId:     existingReservation.PaymentId,
+		PaymentStatus: existingReservation.PaymentStatus,
+		ReservationId: existingReservation.ReservationId,
 	}
 	return response, nil
 }

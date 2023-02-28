@@ -12,11 +12,11 @@ func Parking(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gi
 	ParkingSpaceUrl := r.Group(fmt.Sprintf("/api/%v", ApiVersion))
 	{
 		{
-			ParkingSpaceUrl.POST("/parkingSpace", parkingSpace.CreateParkingSpace)
-			ParkingSpaceUrl.GET("/parkingSpace/:parkingSpaceId", parkingSpace.GetParkingSpacebyId)
-			ParkingSpaceUrl.PUT("/parkingSpace/:parkingSpaceId", parkingSpace.UpdateParkingSpace)
-			ParkingSpaceUrl.DELETE("/parkingSpace/:parkingSpaceId", parkingSpace.DeleteParkingSpace)
-			ParkingSpaceUrl.GET("/parkingSpace", parkingSpace.GetParkingSpaces)
+			ParkingSpaceUrl.POST("/parkingspace", parkingSpace.CreateParkingSpace)
+			ParkingSpaceUrl.GET("/parkingspace/:spacenumber", parkingSpace.GetParkingSpaceBySpaceNumber)
+			ParkingSpaceUrl.PUT("/parkingspace/:spacenumber", parkingSpace.UpdateParkingSpace)
+			ParkingSpaceUrl.DELETE("/parkingspace/:spacenumber", parkingSpace.DeleteParkingSpace)
+			ParkingSpaceUrl.GET("/parkingspaces", parkingSpace.GetParkingSpaces)
 
 		}
 	}

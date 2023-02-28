@@ -34,7 +34,7 @@ func (base *Controller) CreateParkingSpace(c *gin.Context) {
 }
 
 func (base *Controller) UpdateParkingSpace(c *gin.Context) {
-	parkingSpaceId := c.Param("parkingSpaceId")
+	spacenumber := c.Param("spacenumber")
 	var parkingSpace model.ParkingSpace
 	err := c.BindJSON(&parkingSpace)
 
@@ -47,7 +47,7 @@ func (base *Controller) UpdateParkingSpace(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	paymentRes, err := parkingService.UpdateParkingSpace(parkingSpace, parkingSpaceId)
+	paymentRes, err := parkingService.UpdateParkingSpace(parkingSpace, spacenumber)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
@@ -56,16 +56,16 @@ func (base *Controller) UpdateParkingSpace(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
 
-func (base *Controller) GetParkingSpacebyId(c *gin.Context) {
-	paymentId := c.Param("::parkingSpaceId''")
+func (base *Controller) GetParkingSpaceBySpaceNumber(c *gin.Context) {
+	spaceNumber := c.Param("spacenumber")
 
-	paymentRes, errString, err := parkingService.GetParkingSpaceById(paymentId)
+	parkingSpaceRes, errString, err := parkingService.GetParkingSpaceById(spaceNumber)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
+	c.JSON(http.StatusOK, gin.H{"User Data": parkingSpaceRes})
 }
 
 func (base *Controller) GetParkingSpaces(c *gin.Context) {
@@ -86,14 +86,14 @@ func (base *Controller) GetParkingSpaces(c *gin.Context) {
 }
 
 func (base *Controller) DeleteParkingSpace(c *gin.Context) {
-	paymentId := c.Param(":parkingSpaceId'")
+	spacenumber := c.Param("spacenumber")
 
-	categoryResponse, errString, err := parkingService.DeleteParkingSpace(paymentId)
+	_, errString, err := parkingService.DeleteParkingSpace(spacenumber)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
+	c.JSON(http.StatusOK, gin.H{"User Data": errString})
 
 }

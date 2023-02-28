@@ -1,21 +1,27 @@
 package parkingSpace
 
 import (
+	"errors"
 	"fmt"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"github.com/adeben33/vehicleParkingApi/pkg/repository/mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"strconv"
 	"time"
 )
 
 func CreateParkingSpace(space model.ParkingSpace) (model.ParkingSpace, string, error) {
 	//save the payment
+	_, _, err := mongodb.GetParkingSpaceBySpaceNumber(space.SpaceNumber)
+	if err == nil {
+		return model.ParkingSpace{}, fmt.Sprintf("parking space already exist"), errors.New("parking Space already registered")
+	}
 	space.CreatedAt = time.Now().Local().Format(time.DateTime)
 	space.UpdatedAt = time.Now().Local().Format(time.DateTime)
 	space.Id = primitive.NewObjectID()
 	space.ParkingSpaceId = space.Id.Hex()
-	_, err := mongodb.CreateParkingSpace(space)
+	_, err = mongodb.CreateParkingSpace(space)
 	if err != nil {
 		return model.ParkingSpace{}, fmt.Sprintf("Error saving into database"), fmt.Errorf(err.Error())
 	}
@@ -23,8 +29,10 @@ func CreateParkingSpace(space model.ParkingSpace) (model.ParkingSpace, string, e
 	return space, fmt.Sprintf("Category saved successfully into the db"), nil
 }
 
-func GetParkingSpaceById(paymentId string) (model.ParkingSpaceRes, string, error) {
-	payment, stmt, err := mongodb.GetParkingSpaceById(paymentId)
+func GetParkingSpaceById(spaceNumber string) (model.ParkingSpaceRes, string, error) {
+	spaceNumberInt, _ := strconv.Atoi(spaceNumber)
+
+	payment, stmt, err := mongodb.GetParkingSpaceBySpaceNumber(uint16(spaceNumberInt))
 	if err != nil {
 		return model.ParkingSpaceRes{}, stmt, err
 	}
@@ -39,24 +47,27 @@ func GetParkingSpaceById(paymentId string) (model.ParkingSpaceRes, string, error
 	return parkingSpaceRes, fmt.Sprintf("Model generated"), nil
 }
 
-func DeleteParkingSpace(paymentId string) (*mongo.DeleteResult, string, error) {
-	deleteResult, stmt, err := mongodb.DeleteParkingSpace(paymentId)
+func DeleteParkingSpace(spaceNumber string) (*mongo.DeleteResult, string, error) {
+	spaceNumberInt, _ := strconv.Atoi(spaceNumber)
+	deleteResult, stmt, err := mongodb.DeleteParkingSpace(uint16(spaceNumberInt))
 	if err != nil {
 		return nil, stmt, err
 	}
-	return deleteResult, fmt.Sprintf("Payment deleted successfully"), nil
+	return deleteResult, fmt.Sprintf("parking space deleted successfully"), nil
 }
 
 func GetParkingSpaces(search, page, sort string) ([]model.ParkingSpaceRes, string, error) {
-	parkingSpaceRes, err := mongodb.FindParkingSpace(search, page, sort)
+	parkingSpaceRes, err := mongodb.GetParkingSpaces(search, page, sort)
 	if err != nil {
 		return []model.ParkingSpaceRes{}, fmt.Sprintf("paymentRes not generated"), nil
 	}
 	return parkingSpaceRes, fmt.Sprintf("paymentRes generated"), nil
 }
 
-func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) (model.ParkingSpaceRes, error) {
-	existingParkingSpace, _, err := mongodb.GetParkingSpaceById(parkingSpaceId)
+func UpdateParkingSpace(parkingSpace model.ParkingSpace, spacenumber string) (model.ParkingSpaceRes, error) {
+	spacenumberInt, _ := strconv.Atoi(spacenumber)
+
+	existingParkingSpace, _, err := mongodb.GetParkingSpaceBySpaceNumber(uint16(spacenumberInt))
 	if err != nil {
 		return model.ParkingSpaceRes{}, err
 	}
@@ -82,12 +93,15 @@ func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) 
 	if parkingSpace.IsOccupied != false {
 		existingParkingSpace.IsOccupied = parkingSpace.IsOccupied
 	}
-
+	if parkingSpace.Currency != " " {
+		existingParkingSpace.Currency = parkingSpace.Currency
+	}
 	existingParkingSpace.UpdatedAt = time.Now().Local().Format(time.DateTime)
-	_, err = mongodb.UpdateParkingSpace(existingParkingSpace, parkingSpaceId)
+	_, err = mongodb.UpdateParkingSpace(existingParkingSpace, uint16(spacenumberInt))
 	if err != nil {
 		return model.ParkingSpaceRes{}, err
 	}
+
 	response := model.ParkingSpaceRes{
 		SpaceNumber:    existingParkingSpace.SpaceNumber,
 		Charges:        existingParkingSpace.Charges,
@@ -96,6 +110,7 @@ func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) 
 		VehicleId:      existingParkingSpace.VehicleId,
 		ReservedBy:     existingParkingSpace.ReservedBy,
 		ParkingSpaceId: existingParkingSpace.ParkingSpaceId,
+		Currency:       existingParkingSpace.Currency,
 	}
 	return response, nil
 }

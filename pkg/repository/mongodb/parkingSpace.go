@@ -37,7 +37,7 @@ func GetParkingSpaceById(parkingSpaceId string) (model.ParkingSpace, string, err
 	databaseName := config.GetConfig().Mongodb.Database
 	collectionName := constants.ParkingSpaceCollection
 	collection := database.GetCollection(client, databaseName, collectionName)
-	filter := bson.M{"payment_id": parkingSpaceId}
+	filter := bson.M{"parking_space_id": parkingSpaceId}
 
 	var parkingSpace model.ParkingSpace
 	findErr := collection.FindOne(ctx, filter).Decode(&parkingSpace)
@@ -45,25 +45,43 @@ func GetParkingSpaceById(parkingSpaceId string) (model.ParkingSpace, string, err
 		return model.ParkingSpace{}, fmt.Sprintf("No such vehicle"), fmt.Errorf(findErr.Error())
 	}
 
-	return parkingSpace, fmt.Sprintf("Vehicle found"), nil
+	return parkingSpace, fmt.Sprintf("parkingSpace found"), nil
 }
 
-func DeleteParkingSpace(parkingSpaceId string) (*mongo.DeleteResult, string, error) {
+func GetParkingSpaceBySpaceNumber(spaceNumber uint16) (model.ParkingSpace, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	client := database.Connection()
 	databaseName := config.GetConfig().Mongodb.Database
 	collectionName := constants.ParkingSpaceCollection
 	collection := database.GetCollection(client, databaseName, collectionName)
-	filter := bson.M{"payment_space_id": parkingSpaceId}
-	result, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		return nil, fmt.Sprintf("Cannot decode"), err
+	filter := bson.M{"space_number": spaceNumber}
+
+	var parkingSpace model.ParkingSpace
+	findErr := collection.FindOne(ctx, filter).Decode(&parkingSpace)
+	if findErr != nil {
+		return model.ParkingSpace{}, fmt.Sprintf("No such parking space"), fmt.Errorf(findErr.Error())
 	}
-	return result, fmt.Sprintf("category found"), nil
+
+	return parkingSpace, fmt.Sprintf("parkingSpace found"), nil
 }
 
-func FindParkingSpace(search, page, sort string) ([]model.ParkingSpaceRes, error) {
+func DeleteParkingSpace(spaceNumber uint16) (*mongo.DeleteResult, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.ParkingSpaceCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+	filter := bson.M{"space_number": spaceNumber}
+	result, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return nil, fmt.Sprintf("not deleted"), err
+	}
+	return result, fmt.Sprintf("Parking space deleted"), nil
+}
+
+func GetParkingSpaces(search, page, sort string) ([]model.ParkingSpaceRes, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	client := database.Connection()
@@ -76,6 +94,9 @@ func FindParkingSpace(search, page, sort string) ([]model.ParkingSpaceRes, error
 	//it will be querry based on the created time
 	perpage := int64(9)
 	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
+	}
 	skippingLimit := (int64(pageInt) - 1) * perpage
 	findOption := options.Find()
 	findOption = findOption.SetSkip(skippingLimit)
@@ -145,7 +166,7 @@ func FindParkingSpace(search, page, sort string) ([]model.ParkingSpaceRes, error
 
 }
 
-func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) (*mongo.UpdateResult, error) {
+func UpdateParkingSpace(parkingSpace model.ParkingSpace, spacenumber uint16) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	client := database.Connection()
@@ -153,10 +174,10 @@ func UpdateParkingSpace(parkingSpace model.ParkingSpace, parkingSpaceId string) 
 	collectionName := constants.ParkingSpaceCollection
 	collection := database.GetCollection(client, databaseName, collectionName)
 
-	filter := bson.M{"vehicle_id": parkingSpaceId}
+	filter := bson.M{"space_number": spacenumber}
 	upsert := true
 	updateOption := options.UpdateOptions{Upsert: &upsert}
-	updateVehicle := bson.D{{"$set", bson.D{{"spaceNumber", parkingSpace.SpaceNumber}, {"Occupied_by", parkingSpace.OccupiedBy}, {"is_occupied", parkingSpace.IsOccupied}, {"charges", parkingSpace.Charges}, {"vehicle_id", parkingSpace.VehicleId}, {"reserved_by", parkingSpace.ReservedBy}, {"updated_at", parkingSpace.UpdatedAt}}}}
+	updateVehicle := bson.D{{"$set", bson.D{{"space_number", parkingSpace.SpaceNumber}, {"currency", parkingSpace.Currency}, {"occupied_by", parkingSpace.OccupiedBy}, {"is_occupied", parkingSpace.IsOccupied}, {"charges", parkingSpace.Charges}, {"vehicle_id", parkingSpace.VehicleId}, {"reserved_by", parkingSpace.ReservedBy}, {"updated_at", parkingSpace.UpdatedAt}}}}
 	result, UpdateErr := collection.UpdateOne(ctx, filter, updateVehicle, &updateOption)
 	if UpdateErr != nil {
 		return nil, UpdateErr

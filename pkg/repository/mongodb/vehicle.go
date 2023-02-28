@@ -8,6 +8,7 @@ import (
 	"github.com/adeben33/vehicleParkingApi/internal/database"
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -79,6 +80,118 @@ func DeleteVehicle(Id string) (*mongo.DeleteResult, string, error) {
 	return result, fmt.Sprintf("category found"), nil
 }
 
+func GetVehicles(search, page, sort string) ([]model.VehicleRes, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.VehicleCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+
+	//Checking if the querry are empty
+
+	//it will be querry based on the created time
+	perpage := int64(9)
+	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
+	}
+	skippingLimit := (int64(pageInt) - 1) * perpage
+	findOption := options.Find()
+	findOption = findOption.SetSkip(skippingLimit)
+	findOption = findOption.SetLimit(skippingLimit)
+
+	if sort != " " {
+		if sort == "asc" {
+			findOption = findOption.SetSort(bson.D{{"space_number", 1}})
+		} else if sort == "desc" {
+			findOption = findOption.SetSort(bson.D{{"space_number", -1}})
+		}
+	}
+	filter := bson.M{}
+	if search != " " {
+
+		filter = bson.M{
+			"$or": []bson.M{
+				{"Vehicle_id ": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"user_id ": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"plate_number": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"color": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"make": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"model": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+				{"year": bson.M{
+					"$regex": primitive.Regex{
+						Pattern: search,
+						Options: "i",
+					},
+				},
+				},
+			},
+		}
+	}
+
+	//	vehicle variable
+	var vehicles []model.Vehicle
+	var vehicleResponses []model.VehicleRes
+	//database
+	cursor, err := collection.Find(ctx, filter, findOption)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var vehicle model.Vehicle
+		cursor.Decode(&vehicle)
+		vehicles = append(vehicles, vehicle)
+		vehicleResponse := model.VehicleRes{
+			VehicleCategoryId: vehicle.VehicleCategoryId,
+			Make:              vehicle.Make,
+			Model:             vehicle.Model,
+			Year:              vehicle.Year,
+			PlateNumber:       vehicle.PlateNumber,
+			VehicleId:         vehicle.VehicleId,
+		}
+		vehicleResponses = append(vehicleResponses, vehicleResponse)
+	}
+
+	return vehicleResponses, nil
+}
 func UpdateVehicle(vehicle model.Vehicle, id string) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()

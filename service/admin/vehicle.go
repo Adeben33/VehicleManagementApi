@@ -54,6 +54,14 @@ func GetVehicle(id string) (model.VehicleRes, string, error) {
 	return vehicleRes, fmt.Sprintf("Model generated"), nil
 }
 
+func GetVehicles(search, page, sort string) ([]model.VehicleRes, string, error) {
+	parkingSpaceRes, err := mongodb.GetVehicles(search, page, sort)
+	if err != nil {
+		return []model.VehicleRes{}, fmt.Sprintf("paymentRes not generated"), nil
+	}
+	return parkingSpaceRes, fmt.Sprintf("paymentRes generated"), nil
+}
+
 func DeleteVehicle(id string) (*mongo.DeleteResult, string, error) {
 	//Taking to the database
 	deleteResult, stmt, err := mongodb.DeleteVehicle(id)
@@ -96,7 +104,7 @@ func UpdateVehicle(vehicle model.Vehicle, id string) (model.VehicleRes, error) {
 	return response, nil
 }
 
-func GetVehicles(timeLow, timeHigh, page, sort string) ([]model.VehicleRes, string, error) {
+func GetVehiclesWithTime(timeLow, timeHigh, page, sort string) ([]model.VehicleRes, string, error) {
 	vehicleRes, err := mongodb.FindVehicles(timeLow, timeHigh, page, sort)
 	if err != nil {
 		return []model.VehicleRes{}, fmt.Sprintf("vehicleRes not generated"), nil

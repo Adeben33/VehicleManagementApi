@@ -19,6 +19,7 @@ func Admin(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gin.
 		adminUrl.GET("/vehicle/:vehicleId", admin.GetVehicle)
 		adminUrl.PUT("/vehicle/:vehicleId", admin.UpdateVehicle)
 		adminUrl.DELETE("/vehicle/:vehicleId", admin.DeleteVehicle)
+		adminUrl.GET("/vehicle", admin.GetVehicles)
 	}
 
 	//	Category

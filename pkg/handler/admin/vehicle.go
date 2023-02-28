@@ -75,13 +75,28 @@ func (base *Controller) DeleteVehicle(c *gin.Context) {
 }
 
 func (base *Controller) GetVehicles(c *gin.Context) {
+	sort := c.Query("sort")
+	search := c.Query("search")
+
+	page := c.Query("page")
+
+	vehicleResponse, errString, err := adminService.GetVehicles(search, page, sort)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"User Data": vehicleResponse})
+}
+
+func (base *Controller) GetVehiclesWithTime(c *gin.Context) {
 	//	this will use querry to get vehicles registered by the data created
 	sort := c.Query("sort")
 	timeLow := c.Query("timeLow")
 	timeHigh := c.Query("timeHigh")
 	page := c.Query("page")
 
-	vehicleResponse, errString, err := adminService.GetVehicles(timeLow, timeHigh, page, sort)
+	vehicleResponse, errString, err := adminService.GetVehiclesWithTime(timeLow, timeHigh, page, sort)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})

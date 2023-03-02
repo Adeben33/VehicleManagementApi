@@ -119,7 +119,7 @@ func FindReservations(search, page, sort string) ([]model.ReservationRes, error)
 	skippingLimit := (int64(pageInt) - 1) * perpage
 	findOption := options.Find()
 	findOption = findOption.SetSkip(skippingLimit)
-	findOption = findOption.SetLimit(skippingLimit)
+	findOption = findOption.SetLimit(perpage)
 
 	if sort != " " {
 		if sort == "asc" {

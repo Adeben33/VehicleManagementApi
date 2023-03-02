@@ -62,3 +62,37 @@ func GetPayments(search, page, sort string) ([]model.PaymentRes, string, error) 
 	}
 	return paymentRes, fmt.Sprintf("paymentRes generated"), nil
 }
+
+func UpdatePayment(paymentId string, payment model.Payment) (model.PaymentRes, error) {
+	existingPayment, _, err := mongodb.GetPayment(paymentId)
+	if err != nil {
+		return model.PaymentRes{}, err
+	}
+
+	if payment.Amount != 0 {
+		existingPayment.Amount = payment.Amount
+	}
+	if payment.ReservationId != " " {
+		existingPayment.ReservationId = payment.ReservationId
+	}
+
+	if payment.PaymentMethod != " " {
+		existingPayment.PaymentMethod = payment.PaymentMethod
+	}
+
+	payment.UpdatedAt = time.Now().Local().Format(time.DateTime)
+	_, err = mongodb.UpdatePayment(existingPayment, paymentId)
+	if err != nil {
+		return model.PaymentRes{}, err
+	}
+
+	response := model.PaymentRes{
+		UserId:        existingPayment.UserId,
+		ReservationId: existingPayment.ReservationId,
+		Amount:        existingPayment.Amount,
+		PaymentMethod: existingPayment.PaymentMethod,
+		Status:        existingPayment.Status,
+		PaymentId:     existingPayment.PaymentId,
+	}
+	return response, nil
+}

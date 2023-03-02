@@ -47,13 +47,13 @@ func (base *Controller) UpdateParkingSpace(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	paymentRes, err := parkingService.UpdateParkingSpace(parkingSpace, spacenumber)
+	parkingRes, err := parkingService.UpdateParkingSpace(parkingSpace, spacenumber)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
+	c.JSON(http.StatusOK, gin.H{"User Data": parkingRes})
 }
 
 func (base *Controller) GetParkingSpaceBySpaceNumber(c *gin.Context) {

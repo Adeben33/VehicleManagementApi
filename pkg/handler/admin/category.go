@@ -78,3 +78,17 @@ func (base *Controller) DeleteCategory(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
 }
+
+func (base *Controller) GetCategorys(c *gin.Context) {
+	//	this will use querry to get vehicles registered by the data created
+	sort := c.Query("sort")
+	page := c.Query("page")
+
+	categoryResponse, errString, err := adminService.GetCategorys(page, sort)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"User Data": categoryResponse})
+}

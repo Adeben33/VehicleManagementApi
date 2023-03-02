@@ -6,7 +6,7 @@ type Payment struct {
 	Id            primitive.ObjectID `bson:"_id"`
 	UserId        string             `json:"userId" bson:"user_id"`
 	ReservationId string             `json:"reservationId" bson:"reservation_id"`
-	Amount        string             `json:"amount" bson:"amount"`
+	Amount        uint16             `json:"amount" bson:"amount"`
 	PaymentMethod string             `json:"paymentMethod" bson:"payment_method"`
 	Status        string             `json:"status" bson:"status"`
 	CreatedAt     string             `json:"createdAt" bson:"created_at"`
@@ -17,7 +17,7 @@ type Payment struct {
 type PaymentRes struct {
 	UserId        string `json:"userId" bson:"user_id"`
 	ReservationId string `json:"reservationId" bson:"reservation_id"`
-	Amount        string `json:"amount" bson:"amount"`
+	Amount        uint16 `json:"amount" bson:"amount"`
 	PaymentMethod string `json:"paymentMethod" bson:"payment_method"`
 	Status        string `json:"status" bson:"status"`
 	PaymentId     string `json:"paymentId" bson:"payment_id"`

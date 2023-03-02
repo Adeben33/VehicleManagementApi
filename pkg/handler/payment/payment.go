@@ -33,8 +33,32 @@ func (base *PaymentController) CreatePayment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
 
-func (base *PaymentController) UpdatePaymment(c *gin.Context) {
+func (base *PaymentController) UpdatePayment(c *gin.Context) {
+	paymentId := c.Param("paymentId")
+	var payment model.Payment
+
+	err := c.BindJSON(&payment)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = base.Validate.Struct(&payment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	paymentRes, err := paymentService.UpdatePayment(paymentId, payment)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"User Data": paymentRes})
 }
+
 func (base *PaymentController) GetPaymentById(c *gin.Context) {
 	paymentId := c.Param("paymentId")
 

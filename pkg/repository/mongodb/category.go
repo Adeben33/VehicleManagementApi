@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"strconv"
 	"time"
 )
 
@@ -91,4 +93,58 @@ func UpdateCategory(category model.VehicleCategory, id string) (*mongo.UpdateRes
 		return nil, UpdateErr
 	}
 	return result, nil
+}
+
+func FindCategorys(page, sort string) ([]model.VehicleCategoryRes, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.VehicleCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+
+	//Checking if the querry are empty
+
+	//it will be querry based on the created time
+	perpage := int64(9)
+	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
+	}
+	skippingLimit := (int64(pageInt) - 1) * perpage
+	findOption := options.Find()
+	findOption = findOption.SetSkip(skippingLimit)
+	findOption = findOption.SetLimit(perpage)
+
+	if sort != " " {
+		if sort == "asc" {
+			findOption = findOption.SetSort(bson.D{{"space_number", 1}})
+		} else if sort == "desc" {
+			findOption = findOption.SetSort(bson.D{{"space_number", -1}})
+		}
+	}
+	filter := bson.M{}
+
+	//	vehicle variable
+	var vehicles []model.VehicleCategory
+	var vehicleResponses []model.VehicleCategoryRes
+	//database
+	cursor, err := collection.Find(ctx, filter, findOption)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var vehicleCat model.VehicleCategory
+		cursor.Decode(&vehicleCat)
+		vehicles = append(vehicles, vehicleCat)
+		vehicleResponse := model.VehicleCategoryRes{
+			Name:              vehicleCat.Name,
+			RatePerDay:        vehicleCat.RatePerDay,
+			VehicleCategoryId: vehicleCat.VehicleCategoryId,
+		}
+		vehicleResponses = append(vehicleResponses, vehicleResponse)
+	}
+
+	return vehicleResponses, nil
 }

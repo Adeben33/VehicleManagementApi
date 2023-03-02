@@ -80,3 +80,11 @@ func UpdateCategory(category model.VehicleCategory, id string) (model.VehicleCat
 	}
 	return response, nil
 }
+
+func GetCategorys(page, sort string) ([]model.VehicleCategoryRes, string, error) {
+	categoryRes, err := mongodb.FindCategorys(page, sort)
+	if err != nil {
+		return []model.VehicleCategoryRes{}, fmt.Sprintf("category not generated"), nil
+	}
+	return categoryRes, fmt.Sprintf("paymentRes generated"), nil
+}

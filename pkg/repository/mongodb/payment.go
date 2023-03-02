@@ -76,6 +76,9 @@ func FindPayments(search, page, sort string) ([]model.PaymentRes, error) {
 	//it will be querry based on the created time
 	perpage := int64(9)
 	pageInt, _ := strconv.Atoi(page)
+	if pageInt <= 0 {
+		pageInt = 1
+	}
 	skippingLimit := (int64(pageInt) - 1) * perpage
 	findOption := options.Find()
 	findOption = findOption.SetSkip(skippingLimit)
@@ -156,4 +159,23 @@ func FindPayments(search, page, sort string) ([]model.PaymentRes, error) {
 	}
 
 	return paymentResponse, nil
+}
+
+func UpdatePayment(payment model.Payment, paymentId string) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	client := database.Connection()
+	databaseName := config.GetConfig().Mongodb.Database
+	collectionName := constants.PaymentCollection
+	collection := database.GetCollection(client, databaseName, collectionName)
+
+	filter := bson.M{"payment_id": paymentId}
+	upsert := true
+	updateOption := options.UpdateOptions{Upsert: &upsert}
+	updateVehicle := bson.D{{"$set", bson.D{{"status", payment.Status}, {"user_id", payment.UserId}, {"reservation_id", payment.ReservationId}, {"payment_method", payment.PaymentMethod}, {"payment_id", payment.PaymentId}, {"updated_at", payment.UpdatedAt}, {"payment_status", payment.Status}}}}
+	result, UpdateErr := collection.UpdateOne(ctx, filter, updateVehicle, &updateOption)
+	if UpdateErr != nil {
+		return nil, UpdateErr
+	}
+	return result, nil
 }

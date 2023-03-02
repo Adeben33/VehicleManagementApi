@@ -28,6 +28,7 @@ func Admin(r *gin.Engine, validate *validator.Validate, ApiVersion string) *gin.
 		adminUrl.GET("/category/:categoryId", admin.GetCategory)
 		adminUrl.PUT("/category/:categoryId", admin.UpdateCategory)
 		adminUrl.DELETE("/category/:categoryId", admin.DeleteCategory)
+		adminUrl.GET("/category", admin.GetCategorys)
 	}
 	//DashBoard
 	{

@@ -14,9 +14,9 @@ func Payment(r *gin.Engine, validate *validator.Validate, APiVersion string) *gi
 	{
 		paymentUrl.POST("/payment", payment.CreatePayment)
 		paymentUrl.GET("/payment/:paymentId", payment.GetPaymentById)
-		paymentUrl.PUT("/payment/:paymentId", payment.UpdatePaymment)
-		paymentUrl.DELETE("/payment", payment.DeletePayment)
-		paymentUrl.GET("/payment", payment.GetPaymentById)
+		paymentUrl.PUT("/payment/:paymentId", payment.UpdatePayment)
+		paymentUrl.DELETE("/payment/:paymentId", payment.DeletePayment)
+		paymentUrl.GET("/payments", payment.GetPayments)
 
 	}
 

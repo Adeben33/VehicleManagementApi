@@ -16,10 +16,10 @@ func SignUpUser(user model.User) (model.UserRes, string, error) {
 	//check if the user already exists this is checked by email which is unique based of validator
 	_, count, err := mongodb.FindUser(user.Email)
 	if err == nil {
-		return model.UserRes{}, fmt.Sprintf("User Already exists 1"), errors.New("user already exist in database 1")
+		return model.UserRes{}, fmt.Sprintf("User Already exists "), errors.New("user already exist in database 1")
 	}
 	if count > 1 {
-		return model.UserRes{}, fmt.Sprintf("User Already exists 2"), errors.New("user already exist in database 1")
+		return model.UserRes{}, fmt.Sprintf("User Already exists "), errors.New("user already exist in database 1")
 	}
 
 	//Harsh the password
@@ -27,7 +27,8 @@ func SignUpUser(user model.User) (model.UserRes, string, error) {
 	user.Password = string(harsh)
 	user.ID = primitive.NewObjectID()
 	user.CreatedAt = time.Now().Local().Format(time.DateTime)
-	user.CreatedAt = time.Now().Local().Format(time.DateTime)
+	user.UpdatedAt = time.Now().Local().Format(time.DateTime)
+	user.LastLogin = time.Now().Local().Format(time.DateTime)
 	user.UserId = user.ID.Hex()
 
 	//Save to the db
@@ -41,6 +42,7 @@ func SignUpUser(user model.User) (model.UserRes, string, error) {
 		LastName:   user.LastName,
 		Email:      user.Email,
 		VehiclesId: user.VehiclesId,
+		LastLogin:  user.LastLogin,
 	}
 	return response, fmt.Sprintf("User saved successfully"), nil
 }
@@ -62,7 +64,7 @@ func LoginUser(user model.UserLogin) (model.UserRes, string, string, error) {
 		return model.UserRes{}, fmt.Sprintf("unable to create token: %v", err.Error()), " ", err
 	}
 	//	Update the last logged from the database
-	mongodb.SaveUserLastUpdate(result.Email, time.Now())
+	mongodb.SaveUserLastUpdate(user.Email, time.Now())
 	//	response this is the user details
 
 	response := model.UserRes{

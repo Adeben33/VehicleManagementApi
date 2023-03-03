@@ -20,5 +20,10 @@ func Payment(r *gin.Engine, validate *validator.Validate, APiVersion string) *gi
 
 	}
 
+	//payment
+	{
+		//paymentUrl.POST("/payment/stripe", payment.StripePayment)
+	}
+
 	return r
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/adeben33/vehicleParkingApi/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
@@ -54,7 +53,6 @@ func SaveUserLastUpdate(userEmail string, updatedTime time.Time) {
 	collection := database.GetCollection(database.Connection(), config.GetConfig().Mongodb.Database, constants.UserCollection)
 	filter := bson.M{"email": userEmail}
 	update := bson.D{{"$set", bson.D{{"last_login", updatedTime}}}}
-	upsert := true
-	opt := options.UpdateOptions{Upsert: &upsert}
-	collection.UpdateOne(ctx, filter, update, &opt)
+
+	collection.UpdateOne(ctx, filter, update)
 }

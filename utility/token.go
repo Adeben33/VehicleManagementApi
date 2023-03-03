@@ -37,7 +37,7 @@ func GenerateToken(user model.User, secretKey string) string {
 	return tokenString
 }
 
-func ValidateToken(tokenString string) (string, error) {
+func ValidateToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -49,10 +49,10 @@ func ValidateToken(tokenString string) (string, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
 		if time.Now().After(expirationTime) {
-			return "", errors.New("token Has expired")
+			return nil, errors.New("token Has expired")
 		}
-		return claims["role"].(string), nil
+		return claims, nil
 	} else {
-		return "", err
+		return nil, err
 	}
 }

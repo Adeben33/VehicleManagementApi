@@ -22,3 +22,10 @@ type PaymentRes struct {
 	Status        string `json:"status" bson:"status"`
 	PaymentId     string `json:"paymentId" bson:"payment_id"`
 }
+
+type Charge struct {
+	Id           string `json:"id"`
+	Amount       int    `json:"amount"`
+	ReceiptEmail string `json:"Email"`
+	ProductName  string `json:"productName"`
+}

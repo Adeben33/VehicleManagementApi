@@ -16,7 +16,7 @@ func Authorization() gin.HandlerFunc {
 			return
 		}
 		//	Validate the userToken
-		role, errString := utility.ValidateToken(token.Value)
+		claims, errString := utility.ValidateToken(token.Value)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": errString})
 			return
@@ -45,7 +45,7 @@ func Authorization() gin.HandlerFunc {
 		//	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "claims not seen "})
 		//	return
 		//}
-		fmt.Printf(role)
+		fmt.Printf(claims["role"].(string))
 		c.Next()
 	}
 

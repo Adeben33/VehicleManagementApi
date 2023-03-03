@@ -74,13 +74,13 @@ func (base *Controller) GetReservations(c *gin.Context) {
 
 	page := c.Query("page")
 
-	vehicleResponse, errString, err := reservationService.GetReservation(search, page, sort)
+	reservationResponse, errString, err := reservationService.GetReservation(search, page, sort)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": errString, "Error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"User Data": vehicleResponse})
+	c.JSON(http.StatusOK, gin.H{"User Data": reservationResponse})
 
 }
 

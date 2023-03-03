@@ -45,7 +45,7 @@ func (base *UserController) Login(c *gin.Context) {
 		return
 	}
 	_, err = c.Request.Cookie("userToken")
-	if err == nil {
+	if err != nil {
 		c.JSON(401, gin.H{"Error": "User Already logged in"})
 		return
 	}

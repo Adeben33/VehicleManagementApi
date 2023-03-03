@@ -85,7 +85,7 @@ func UpdateReservation(reservation model.Reservation, reservationId string) (*mo
 	defer cancel()
 	client := database.Connection()
 	databaseName := config.GetConfig().Mongodb.Database
-	collectionName := constants.VehicleCollection
+	collectionName := constants.ReservationCollection
 	collection := database.GetCollection(client, databaseName, collectionName)
 
 	filter := bson.M{"reservation_id": reservationId}
@@ -128,6 +128,7 @@ func FindReservations(search, page, sort string) ([]model.ReservationRes, error)
 			findOption = findOption.SetSort(bson.D{{"reservation_id", -1}})
 		}
 	}
+
 	filter := bson.M{}
 	if search != " " {
 		filter = bson.M{
